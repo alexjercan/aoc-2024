@@ -1,0 +1,6 @@
+@import stdlib
+
+func main () (int) in
+    string.stdin string.stdout
+    0
+end
