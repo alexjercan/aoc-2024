@@ -1,6 +1,93 @@
 @import stdlib
 
+func step (string) (int, int, string) in
+    "\n" string.split -- line, rest
+    swp "   " string.split -- rest, "x", "y"
+    int.read unwrap swp int.read unwrap swp -- rest, x, y
+    rot -- x, y, rest
+end
+
+func parse (string) (array, array) in -- array<int>
+    int.sizeof array.init.with_sz -- s, xs
+    int.sizeof array.init.with_sz -- s, xs, ys
+    match xs ys in
+        while -- s
+            dup -- s, s
+            string.len -- s, L
+            1 > loop -- s
+            step -- x, y, s'
+            rot' -- s', x, y
+            match x y in -- s'
+                xs x int.& array.append unwrap
+                ys y int.& array.append unwrap
+            end
+        pool -- s
+
+        pop -- ()
+        xs ys
+    end
+
+end
+
+func part1 (string) (string) in
+    parse match xs ys in
+        xs array.sort<int>
+        ys array.sort<int>
+
+        0 0 while -- acc, i
+            dup xs array.count < loop -- acc, i
+            match acc i in
+                xs i array.get unwrap int.* -- x
+                ys i array.get unwrap int.* -- x, y
+                - abs -- |x-y|
+                acc + i 1 + -- acc', i+1
+            end
+        pool -- acc, i
+
+        pop int.show
+    end
+end
+
+func count (array, int) (int) in -- ys, x
+    match ys x in
+        0 0 while -- acc, i
+            dup ys array.count < loop -- acc, i
+            match acc i in
+                ys i array.get unwrap int.* -- y
+                x = if acc 1 + else acc fi -- acc
+                i 1 +
+            end
+        pool -- acc, i
+        pop
+    end
+end
+
+func part2 (string) (string) in
+    parse match xs ys in
+        0 0 while -- acc, i
+            dup xs array.count < loop -- acc, i
+            match acc i in
+                xs i array.get unwrap int.* -- x
+                match x in
+                    ys x count -- c
+                    x * -- c*x
+                    acc + -- acc+c*x
+                    i 1 +
+                end
+            end
+        pool -- acc, i
+        pop int.show
+    end
+end
+
+func solution (string) (string) in
+    match s in
+        "Part 1: " s part1 string.concat "\n" string.concat
+        "Part 2: " s part2 string.concat "\n" string.concat string.concat
+    end
+end
+
 func main () (int) in
-    string.stdin string.stdout
+    string.stdin solution string.stdout
     0
 end
