@@ -1,9 +1,14 @@
 {
   description = "A basic flake for my AoC 2024";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.slc-flake.url = "github:alexjercan/stack-lang-c";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    slc-flake = {
+      url = "github:alexjercan/stack-lang-c";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
 
   outputs = {
     self,
