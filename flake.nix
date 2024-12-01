@@ -26,9 +26,52 @@
         };
       };
     in {
+      devShells.default =
+        pkgs.mkShell
+        {
+          name = "env-shell";
+
+          nativeBuildInputs = [
+            slc-flake.packages.${system}.default
+            pkgs.fasm
+            pkgs.ghc
+          ];
+
+          shellHook = ''
+            export STACK_HOME=${slc-flake.packages.${system}.default}
+          '';
+        };
+      packages.aoc2024-day01 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day01";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)" "STACK_HOME=${slc-flake.packages.${system}.default}"];
+
+        nativeBuildInputs = [
+          slc-flake.packages.${system}.default
+          pkgs.fasm
+        ];
+
+        src = ./day01;
+      };
+      packages.aoc2024-day02 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day02";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.ghc
+        ];
+
+        src = ./day02;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
-        runtimeInputs = [self.packages.${system}.aoc2024-day01];
+        runtimeInputs = [
+          self.packages.${system}.aoc2024-day01
+          self.packages.${system}.aoc2024-day02
+        ];
         text =
           /*
           bash
@@ -40,7 +83,7 @@
             Color_Off='\033[0m'
 
             IRed='\033[0;91m'
-            # IGreen='\033[0;92m'
+            IGreen='\033[0;92m'
             # IYellow='\033[0;93m'
 
             BIGreen='\033[1;92m'
@@ -63,6 +106,9 @@
 
             echo -e "$IRed""--- Day 1: Historian Hysteria (Stack) ---""$Color_Off"
             aoc2024-day01 < ./input/day01.input
+
+            echo -e "$IGreen""--- Day 2: Red-Nosed Reports (Haskell) ---""$Color_Off"
+            aoc2024-day02 < ./input/day02.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
@@ -131,32 +177,6 @@
             curl -sS -o "$filename" -b "session=$AOC_SESSION" https://adventofcode.com/"$year"/day/"$day"/input
           '';
       };
-      packages.aoc2024-day01 = pkgs.stdenv.mkDerivation {
-        pname = "aoc2024-day01";
-        version = "1.0.0";
-
-        makeFlags = ["PREFIX=$(out)" "STACK_HOME=${slc-flake.packages.${system}.default}"];
-
-        nativeBuildInputs = [
-          slc-flake.packages.${system}.default
-          pkgs.fasm
-        ];
-
-        src = ./day01;
-      };
-      devShells.default =
-        pkgs.mkShell
-        {
-          name = "env-shell";
-
-          nativeBuildInputs = [
-            slc-flake.packages.${system}.default
-          ];
-
-          shellHook = ''
-            export STACK_HOME=${slc-flake.packages.${system}.default}
-          '';
-        };
     })
   );
 }
