@@ -56,7 +56,7 @@
                 ^^^[_]^^^
             "
 
-            echo -e "$IRed""--- Day 1:  ---""$Color_Off"
+            echo -e "$IRed""--- Day 1: Historian Hysteria (Stack) ---""$Color_Off"
             aoc2024-day01 < ./input/day01.input
           '';
       };
