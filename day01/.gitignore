@@ -1,3 +1,7 @@
+# Object files
+*.o
+
+# Assembly files
+*.asm
+
 main
-main.o
-main.asm

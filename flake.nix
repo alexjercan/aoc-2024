@@ -36,6 +36,9 @@
             pkgs.fasm
             pkgs.ghc
             pkgs.jdk
+            pkgs.odin
+            pkgs.ocaml
+            pkgs.opam
           ];
 
           shellHook = ''
@@ -84,12 +87,25 @@
 
         src = ./day03;
       };
+      packages.aoc2024-day04 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day04";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.odin
+        ];
+
+        src = ./day04;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
           self.packages.${system}.aoc2024-day01
           self.packages.${system}.aoc2024-day02
           self.packages.${system}.aoc2024-day03
+          self.packages.${system}.aoc2024-day04
         ];
         text =
           /*
@@ -131,6 +147,9 @@
 
             echo -e "$IYellow""--- Day 3: Mull It Over (Java) ---""$Color_Off"
             aoc2024-day03 < ./input/day03.input
+
+            echo -e "$IRed""--- Day 4: Ceres Search (Odin) ---""$Color_Off"
+            aoc2024-day04 < ./input/day04.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
