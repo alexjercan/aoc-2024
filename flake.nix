@@ -35,6 +35,7 @@
             slc-flake.packages.${system}.default
             pkgs.fasm
             pkgs.ghc
+            pkgs.jdk
           ];
 
           shellHook = ''
@@ -66,11 +67,29 @@
 
         src = ./day02;
       };
+      packages.aoc2024-day03 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day03";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.jdk
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.jre}/bin/java $out/bin/aoc2024-day03 --add-flags "-cp $out/bin/aoc2024-day03.jar Main"
+        '';
+
+        src = ./day03;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
           self.packages.${system}.aoc2024-day01
           self.packages.${system}.aoc2024-day02
+          self.packages.${system}.aoc2024-day03
         ];
         text =
           /*
@@ -84,7 +103,7 @@
 
             IRed='\033[0;91m'
             IGreen='\033[0;92m'
-            # IYellow='\033[0;93m'
+            IYellow='\033[0;93m'
 
             BIGreen='\033[1;92m'
 
@@ -109,6 +128,9 @@
 
             echo -e "$IGreen""--- Day 2: Red-Nosed Reports (Haskell) ---""$Color_Off"
             aoc2024-day02 < ./input/day02.input
+
+            echo -e "$IYellow""--- Day 3: Mull It Over (Java) ---""$Color_Off"
+            aoc2024-day03 < ./input/day03.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
