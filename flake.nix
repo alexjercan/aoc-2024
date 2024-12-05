@@ -39,6 +39,7 @@
             pkgs.odin
             pkgs.ocaml
             pkgs.opam
+            pkgs.swi-prolog
           ];
 
           shellHook = ''
@@ -99,6 +100,23 @@
 
         src = ./day04;
       };
+      packages.aoc2024-day05 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day05";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.swi-prolog
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.swi-prolog}/bin/swipl $out/bin/aoc2024-day05 --add-flags "-g main -t halt $out/bin/main.pl"
+        '';
+
+        src = ./day05;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -106,6 +124,7 @@
           self.packages.${system}.aoc2024-day02
           self.packages.${system}.aoc2024-day03
           self.packages.${system}.aoc2024-day04
+          self.packages.${system}.aoc2024-day05
         ];
         text =
           /*
@@ -150,6 +169,9 @@
 
             echo -e "$IRed""--- Day 4: Ceres Search (Odin) ---""$Color_Off"
             aoc2024-day04 < ./input/day04.input
+
+            echo -e "$IGreen""--- Day 5: Print Queue (Prolog) ---""$Color_Off"
+            aoc2024-day05 < ./input/day05.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
