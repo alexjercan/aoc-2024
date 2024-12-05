@@ -25,9 +25,6 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./show
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,16 +37,19 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          cache-dependency-path: ./show/pnpm-lock.yaml
       - name: Install dependencies
+        working-directory: ./show
         run: pnpm install
       - name: Build with Webpack
+        working-directory: ./show
         run: pnpm run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./dist
+          source: ./show/dist
           destination: ./_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
