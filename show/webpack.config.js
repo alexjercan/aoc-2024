@@ -15,7 +15,10 @@ const entries = fs
 
 export default {
     mode: "development",
-    entry: entries,
+    entry: {
+        ...entries,
+        styles: "./src/styles.css",
+    },
     output: {
         filename: "[name].js", // Outputs day01.js, day02.js, etc.
         path: path.resolve("dist"),
@@ -30,16 +33,20 @@ export default {
                 use: "ts-loader",
                 exclude: /node_modules/,
             },
+            {
+                test: /\.css$/,
+                use: ["style-loader", "css-loader", "postcss-loader"],
+            },
         ],
     },
     plugins: [
-    // Generate an HTML file for each entry using the day.html template
+        // Generate an HTML file for each entry using the day.html template
         ...Object.keys(entries).map(
             (name) =>
                 new HtmlWebpackPlugin({
                     template: "./src/day.html", // Use the shared day.html template
                     filename: `${name}.html`, // Outputs day01.html, day02.html, etc.
-                    chunks: [name], // Include only the corresponding entry chunk
+                    chunks: [name, "styles"], // Include only the corresponding entry chunk
                     templateParameters: {
                         dayName: name.toUpperCase(), // Pass the name to the template (e.g., "DAY01")
                     },
@@ -49,7 +56,7 @@ export default {
         new HtmlWebpackPlugin({
             template: "./src/index.html",
             filename: "index.html",
-            chunks: [], // No JS for the main index.html page
+            chunks: ["styles"], // No JS for the main index.html page
         }),
     ],
     devServer: {
