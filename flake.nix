@@ -40,6 +40,8 @@
             pkgs.ocaml
             pkgs.opam
             pkgs.swi-prolog
+            pkgs.nodejs
+            pkgs.pnpm
           ];
 
           shellHook = ''
