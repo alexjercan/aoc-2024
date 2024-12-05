@@ -48,7 +48,8 @@ export default {
                     filename: `${name}.html`, // Outputs day01.html, day02.html, etc.
                     chunks: [name, "styles"], // Include only the corresponding entry chunk
                     templateParameters: {
-                        dayName: name.toUpperCase(), // Pass the name to the template (e.g., "DAY01")
+                        // Capitalize the day name for the title
+                        dayName: name.charAt(0).toUpperCase() + name.slice(1),
                     },
                 })
         ),

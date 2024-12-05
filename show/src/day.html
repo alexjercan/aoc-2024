@@ -3,10 +3,37 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><%= dayName %> Solution</title>
+        <title>AoC 2024 | <%= dayName %></title>
     </head>
-    <body>
-        <h1><%= dayName %> Solution</h1>
-        <div id="app"></div>
+    <body class="source-code-pro-400 bg-neutral-900 text-white">
+        <header class="flex items-center p-6">
+            <h1 class="text-3xl font-bold text-green-700">
+                Advent of Code 2024 - <%= dayName %>
+            </h1>
+        </header>
+
+        <main class="w-full max-w-4xl mx-auto p-6">
+            <section class="bg-neutral-800 p-6 rounded-lg shadow-lg mb-4">
+                <h2 class="text-xl text-green-400 mb-4">Part1 Solution</h2>
+                <p class="text-gray-300">Your puzzle description or solution goes here.</p>
+                <div id="part1" class="mt-8">
+            </section>
+
+            <section class="bg-neutral-800 p-6 rounded-lg shadow-lg mb-4">
+                <h2 class="text-xl text-green-400 mb-4">Part2 Solution</h2>
+                <p class="text-gray-300">Your puzzle description or solution goes here.</p>
+                <div id="part2" class="mt-8">
+            </section>
+        </main>
+
+        <footer class="p-6 text-center text-gray-400">
+            <p>
+                Advent of Code is a challenge by
+                <a href="https://adventofcode.com" class="text-blue-400 hover:text-blue-300 hover:underline">
+                    Eric Wastl
+                </a>.
+            </p>
+        </footer>
     </body>
 </html>
+
