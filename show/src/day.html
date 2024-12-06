@@ -6,9 +6,15 @@
         <title>AoC 2024 | <%= dayName %></title>
     </head>
     <body class="source-code-pro-400 bg-neutral-900 text-white">
-        <header class="flex items-center p-6">
+        <header class="flex flex-row items-center p-6">
             <h1 class="text-3xl font-bold text-green-700">
-                Advent of Code 2024 - <%= dayName %>
+                <a href="index.html" class="text-green hover:text-green-300 hover:underline">
+                    Advent of Code 2024
+                </a>
+                -
+                <a href="https://adventofcode.com/2024/day/<%= dayIndex %>" class="text-green-400 hover:text-green-300 hover:underline">
+                    <%= dayName %>
+                </a>
             </h1>
         </header>
 
@@ -16,11 +22,34 @@
             <section class="flex flex-col bg-neutral-800 p-6 rounded-lg shadow-lg mb-4 min-h-[50vh]">
                 <h2 class="text-xl text-green-400 mb-4">Part1 Solution</h2>
                 <div id="part1" class="flex flex-col mt-8 w-full grow">
+                    <div id="part1-input" class="flex flex-col items-center space-y-4 w-full grow">
+                        <textarea id="part1-textarea" class="w-full p-4 text-center bg-neutral-700 text-white border border-gray-300 focus:outline-none focus:border-blue-500 rounded" placeholder="Input"></textarea>
+                    </div>
+                    <div id="part1-solution" class="hidden flex flex-col items-center space-y-4 w-full grow"></div>
+                    <div id="part1-control" class="flex flex-col items-center space-y-4 w-full grow">
+                        <div class="flex space-x-4 mt-4">
+                            <button id="part1-solve" class="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all w-32">Solve</button>
+                            <button id="part1-step" class="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-all w-32">Step</button>
+                            <button id="part1-reset" class="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all w-32">Reset</button>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <section class="flex flex-col bg-neutral-800 p-6 rounded-lg shadow-lg mb-4 min-h-[50vh]">
                 <h2 class="text-xl text-green-400 mb-4">Part2 Solution</h2>
                 <div id="part2" class="flex flex-col mt-8 w-full grow">
+                    <div id="part2-input" class="flex flex-col items-center space-y-4 w-full grow">
+                        <textarea id="part2-textarea" class="w-full p-4 text-center bg-neutral-700 text-white border border-gray-300 focus:outline-none focus:border-blue-500 rounded" placeholder="Input"></textarea>
+                    </div>
+                    <div id="part2-solution" class="hidden flex flex-col items-center space-y-4 w-full grow"></div>
+                    <div id="part2-control" class="flex flex-col items-center space-y-4 w-full grow">
+                        <div class="flex space-x-4 mt-4">
+                            <button id="part2-solve" class="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all w-32">Solve</button>
+                            <button id="part2-step" class="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-all w-32">Step</button>
+                            <button id="part2-reset" class="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all w-32">Reset</button>
+                        </div>
+                    </div>
             </section>
         </main>
 

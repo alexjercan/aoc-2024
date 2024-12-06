@@ -50,6 +50,7 @@ export default {
                     templateParameters: {
                         // Capitalize the day name for the title
                         dayName: name.charAt(0).toUpperCase() + name.slice(1),
+                        dayIndex: Number(name.slice(3)).toString(),
                     },
                 })
         ),
