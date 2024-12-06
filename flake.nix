@@ -119,6 +119,23 @@
 
         src = ./day05;
       };
+      packages.aoc2024-day06 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day06";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.nodejs
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.nodejs}/bin/node $out/bin/aoc2024-day06 --add-flags "$out/bin/main.js"
+        '';
+
+        src = ./day06;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -127,6 +144,7 @@
           self.packages.${system}.aoc2024-day03
           self.packages.${system}.aoc2024-day04
           self.packages.${system}.aoc2024-day05
+          self.packages.${system}.aoc2024-day06
         ];
         text =
           /*
@@ -174,6 +192,9 @@
 
             echo -e "$IGreen""--- Day 5: Print Queue (Prolog) ---""$Color_Off"
             aoc2024-day05 < ./input/day05.input
+
+            echo -e "$IYellow""--- Day 6: Guard Gallivant (JavaScript) ---""$Color_Off"
+            aoc2024-day06 < ./input/day06.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
