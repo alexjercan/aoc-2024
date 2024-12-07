@@ -696,7 +696,6 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
     }
 }
 
-
 const part1 = new Part("part1");
 part1.textareaInput.value = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
 const part1Solution = new Part1Solution(part1.textareaInput.value);
@@ -716,3 +715,9 @@ part2.textareaInput.onchange = () => part2Solution.setInput(part2.textareaInput.
 part2.solveButton.onclick = () => animator2.solve();
 part2.stepButton.onclick = () => animator2.step();
 part2.resetButton.onclick = () => animator2.reset();
+
+part1.descriptionDiv.appendChild(utils.createParagraph("To solve this problem we need to find the L1 distance between each pair of numbers in the two columns, after we order the numbers in each column."));
+part1.descriptionDiv.appendChild(utils.createParagraph("The L1 distance between two numbers is the absolute difference between them."));
+
+part2.descriptionDiv.appendChild(utils.createParagraph("To solve this problem we need to find the similarity score of the numbers in the first columns."));
+part2.descriptionDiv.appendChild(utils.createParagraph("The similarity score between two numbers is the product of the left number and the number of occurrences of the right number in the second column."));

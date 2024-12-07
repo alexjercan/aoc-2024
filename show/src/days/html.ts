@@ -6,6 +6,7 @@ class Part {
     solveButton: HTMLButtonElement;
     stepButton: HTMLButtonElement;
     resetButton: HTMLButtonElement;
+    descriptionDiv: HTMLDivElement;
 
     constructor(name: string) {
         this.inputDiv = document.getElementById(`${name}-input`) as HTMLDivElement;
@@ -15,6 +16,7 @@ class Part {
         this.solveButton = document.getElementById(`${name}-solve`) as HTMLButtonElement;
         this.stepButton = document.getElementById(`${name}-step`) as HTMLButtonElement;
         this.resetButton = document.getElementById(`${name}-reset`) as HTMLButtonElement;
+        this.descriptionDiv = document.getElementById(`${name}-description`) as HTMLDivElement;
 
         this.textareaInput.rows = 6;
     }
@@ -84,12 +86,19 @@ function highlightItemPopOut(element: { item: HTMLLIElement, text: HTMLSpanEleme
     }, 300); // Match the duration of the transition
 }
 
+function createParagraph(text: string): HTMLParagraphElement {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = text;
+    return paragraph;
+}
+
 const utils = {
     createNumberItem,
     createColumnItems,
     highlightItemIn,
     highlightItemOut,
     highlightItemPopOut,
+    createParagraph,
 };
 
 export { Part, utils };
