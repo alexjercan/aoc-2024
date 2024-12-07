@@ -36,6 +36,10 @@ type Part1TraceItem = Part1TraceItemInput | Part1TraceItemSelect | Part1TraceIte
 class Part1Solution implements Solution<Part1TraceItem> {
     private input: string;
 
+    setInput(input: string): void {
+        this.input = input;
+    }
+
     constructor(input: string) {
         this.input = input;
     }
@@ -179,25 +183,6 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
     }
 
     private create() {
-        // Create the answer container
-        const answerDiv = document.createElement("div");
-        answerDiv.classList.add(
-            "text-2xl",       // Large text size
-            "font-semibold",  // Semi-bold text
-            "text-center",    // Centered text
-            "mb-4",           // Margin bottom
-            "text-green-500"  // Green text color
-        );
-        this.solutionDiv.appendChild(answerDiv);
-
-        const answerText = document.createElement("span");
-        answerText.textContent = "Answer: ";
-        answerDiv.appendChild(answerText);
-
-        this.answerNumber = document.createElement("span");
-        this.answerNumber.textContent = "0";
-        answerDiv.appendChild(this.answerNumber);
-
         // Create the main puzzle container
         const puzzleDiv = document.createElement("div");
         puzzleDiv.classList.add(
@@ -207,8 +192,10 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "items-start",     // Align items to the start (top)
             "space-x-4",       // Horizontal space between children
             "w-full",          // Full width
+            "h-full",          // Full height
             "grow",            // Allow the container to grow
-            "py-4"             // Vertical padding
+            "py-4",            // Vertical padding
+            "overflow-y-auto"  // Allow vertical scrolling
         );
         this.solutionDiv.appendChild(puzzleDiv);
 
@@ -241,7 +228,9 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "p-4",             // Padding inside the container
             "bg-neutral-800",  // Dark background
             "rounded-lg",      // Rounded corners
-            "shadow-lg"        // Large shadow effect
+            "shadow-lg",       // Large shadow effect
+            "sticky",          // Stick to the top
+            "top-0"            // Stick to the top
         );
         puzzleDiv.appendChild(middlePad);
 
@@ -263,6 +252,25 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "duration-300"     // 300ms duration for transitions
         );
         puzzleDiv.appendChild(this.rightColumn);
+
+        // Create the answer container
+        const answerDiv = document.createElement("div");
+        answerDiv.classList.add(
+            "text-2xl",       // Large text size
+            "font-semibold",  // Semi-bold text
+            "text-center",    // Centered text
+            "mb-4",           // Margin bottom
+            "text-green-500"  // Green text color
+        );
+        middlePad.appendChild(answerDiv);
+
+        const answerText = document.createElement("span");
+        answerText.textContent = "Answer: ";
+        answerDiv.appendChild(answerText);
+
+        this.answerNumber = document.createElement("span");
+        this.answerNumber.textContent = "0";
+        answerDiv.appendChild(this.answerNumber);
 
         // Create the top row of the middle pad
         const middleTopRow = document.createElement("ul");
@@ -386,6 +394,10 @@ type Part2TraceItem = Part2TraceItemInput | Part2TraceItemSelect | Part2TraceIte
 
 class Part2Solution implements Solution<Part2TraceItem> {
     private input: string;
+
+    setInput(input: string): void {
+        this.input = input;
+    }
 
     constructor(input: string) {
         this.input = input;
@@ -531,25 +543,6 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
     }
 
     private create() {
-        // Create the answer container
-        const answerDiv = document.createElement("div");
-        answerDiv.classList.add(
-            "text-2xl",       // Large text size
-            "font-semibold",  // Semi-bold text
-            "text-center",    // Centered text
-            "mb-4",           // Margin bottom
-            "text-green-500"  // Green text color
-        );
-        this.solutionDiv.appendChild(answerDiv);
-
-        const answerText = document.createElement("span");
-        answerText.textContent = "Answer: ";
-        answerDiv.appendChild(answerText);
-
-        this.answerNumber = document.createElement("span");
-        this.answerNumber.textContent = "0";
-        answerDiv.appendChild(this.answerNumber);
-
         // Create the main puzzle container
         const puzzleDiv = document.createElement("div");
         puzzleDiv.classList.add(
@@ -559,8 +552,10 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
             "items-start",     // Align items to the start (top)
             "space-x-4",       // Horizontal space between children
             "w-full",          // Full width
+            "h-full",          // Full height
             "grow",            // Allow the container to grow
-            "py-4"             // Vertical padding
+            "py-4",            // Vertical padding
+            "overflow-y-auto"  // Allow vertical scrolling
         );
         this.solutionDiv.appendChild(puzzleDiv);
 
@@ -593,7 +588,9 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
             "p-4",             // Padding inside the container
             "bg-neutral-800",  // Dark background
             "rounded-lg",      // Rounded corners
-            "shadow-lg"        // Large shadow effect
+            "shadow-lg",       // Large shadow effect
+            "sticky",          // Stick to the top
+            "top-0"            // Stick to the top
         );
         puzzleDiv.appendChild(middlePad);
 
@@ -615,6 +612,25 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
             "duration-300"     // 300ms duration for transitions
         );
         puzzleDiv.appendChild(this.rightColumn);
+
+        // Create the answer container
+        const answerDiv = document.createElement("div");
+        answerDiv.classList.add(
+            "text-2xl",       // Large text size
+            "font-semibold",  // Semi-bold text
+            "text-center",    // Centered text
+            "mb-4",           // Margin bottom
+            "text-green-500"  // Green text color
+        );
+        middlePad.appendChild(answerDiv);
+
+        const answerText = document.createElement("span");
+        answerText.textContent = "Answer: ";
+        answerDiv.appendChild(answerText);
+
+        this.answerNumber = document.createElement("span");
+        this.answerNumber.textContent = "0";
+        answerDiv.appendChild(this.answerNumber);
 
         // Create the top row of the middle pad
         const middleTopRow = document.createElement("ul");
@@ -686,6 +702,7 @@ part1.textareaInput.value = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
 const part1Solution = new Part1Solution(part1.textareaInput.value);
 const part1Animator = new Part1Animator(part1.inputDiv, part1.solutionDiv);
 const animator1 = new Animator(part1Solution, part1Animator);
+part1.textareaInput.onchange = () => part1Solution.setInput(part1.textareaInput.value);
 part1.solveButton.onclick = () => animator1.solve();
 part1.stepButton.onclick = () => animator1.step();
 part1.resetButton.onclick = () => animator1.reset();
@@ -695,6 +712,7 @@ part2.textareaInput.value = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
 const part2Solution = new Part2Solution(part2.textareaInput.value);
 const part2Animator = new Part2Animator(part2.inputDiv, part2.solutionDiv);
 const animator2 = new Animator(part2Solution, part2Animator);
+part2.textareaInput.onchange = () => part2Solution.setInput(part2.textareaInput.value);
 part2.solveButton.onclick = () => animator2.solve();
 part2.stepButton.onclick = () => animator2.step();
 part2.resetButton.onclick = () => animator2.reset();
