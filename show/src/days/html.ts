@@ -56,17 +56,27 @@ function createColumnItems(container: HTMLUListElement, values: number[]): { ite
     });
 }
 
-function highlightItemIn(element: { item: HTMLLIElement, text: HTMLSpanElement }) {
+function createRowItems(container: HTMLUListElement, values: number[]): { item: HTMLLIElement, text: HTMLSpanElement }[] {
+    container.innerHTML = ""; // Clear the container
+    return values.map(value => {
+        const item = createNumberItem(value.toString());
+        item.item.classList.add("mx-2"); // Add margin to the item
+        container.appendChild(item.item);
+        return item;
+    });
+}
+
+function highlightItemIn(element: { item: HTMLLIElement, text: HTMLSpanElement }, options: { color: string } = { color: "bg-green-500" }) {
     element.item.classList.remove("bg-neutral-700");
     element.item.classList.add(
-        "bg-green-500",    // Green background on highlight
+        options.color,     // Highlight the item with the specified color
         "transform",       // Enable scaling
         "scale-110"        // Slightly enlarge the item
     );
 }
 
-function highlightItemOut(element: { item: HTMLLIElement, text: HTMLSpanElement }) {
-    element.item.classList.remove("bg-green-500");
+function highlightItemOut(element: { item: HTMLLIElement, text: HTMLSpanElement }, options: { color: string } = { color: "bg-green-500" }) {
+    element.item.classList.remove(options.color, "transform", "scale-110");
     element.item.classList.add("bg-neutral-700");
 }
 
@@ -92,13 +102,35 @@ function createParagraph(text: string): HTMLParagraphElement {
     return paragraph;
 }
 
+function createOrderedList(items: string[]): HTMLOListElement {
+    const list = document.createElement("ol");
+    list.classList.add(
+        "list-decimal", // Use decimal numbers
+        "list-inside",  // Place the numbers inside the list
+    );
+
+    items.forEach(item => {
+        const listItem = document.createElement("li");
+        listItem.classList.add(
+        );
+        listItem.textContent = item;
+        list.appendChild(listItem);
+    });
+    return list;
+}
+
 const utils = {
+    // Elements
     createNumberItem,
     createColumnItems,
+    createRowItems,
+    // Animation
     highlightItemIn,
     highlightItemOut,
     highlightItemPopOut,
+    // Text
     createParagraph,
+    createOrderedList
 };
 
 export { Part, utils };

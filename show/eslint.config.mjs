@@ -15,9 +15,12 @@ export default [
             "semi": ["error", "always"],
             "quotes": ["error", "double"],
             "no-console": "warn",
-            "no-unused-vars": "warn",
             "no-undef": "error",
             "indent": ["error", 4],
+            "@typescript-eslint/no-unused-vars": [
+                "warn",
+                { varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+            ],
         }
     },
     {
