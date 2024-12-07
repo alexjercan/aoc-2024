@@ -1,35 +1,177 @@
-// Part1
-class Part1TraceItem {
-    leftIndex: number;
-    rightIndex: number;
-    l1Distance: number;
-    accumulatedDistance: number;
+type Trace<T> = T[];
 
-    constructor(leftIndex: number, rightIndex: number, l1Distance: number, accumulatedDistance: number) {
-        this.leftIndex = leftIndex;
-        this.rightIndex = rightIndex;
-        this.l1Distance = l1Distance;
-        this.accumulatedDistance = accumulatedDistance;
+interface Solution<T> {
+    solve(): Trace<T>;
+}
+
+interface PartAnimator<T> {
+    reset(): void;
+    begin(): void;
+    step(step: T): void;
+}
+
+class Animator<T> {
+    private abortController: AbortController;
+    private part: PartAnimator<T>;
+    private solution: Solution<T>;
+
+    private state?: { trace: Trace<T>, stepIndex: number };
+
+    constructor(solution: Solution<T>, part: PartAnimator<T>) {
+        this.abortController = new AbortController();
+        this.part = part;
+        this.solution = solution;
+
+        this.reset();
+    }
+
+    reset() {
+        this.abortController.abort();
+        this.abortController = new AbortController();
+
+        this.state = undefined;
+
+        this.part.reset();
+    }
+
+    async solve() {
+        if (this.state && this.state.stepIndex >= this.state.trace.length || !this.state) {
+            this.reset();
+
+            const trace = this.solution.solve();
+            this.state = { trace, stepIndex: 0 };
+
+            this.part.begin();
+        }
+
+        const abortController = this.abortController;
+        while (!abortController.signal.aborted && this.state.stepIndex < this.state.trace.length) {
+            const step = this.state.trace[this.state.stepIndex];
+
+            this.part.step(step);
+            this.state.stepIndex++;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+
+    step() {
+        if (this.state && this.state.stepIndex >= this.state.trace.length) {
+            this.reset();
+        }
+
+        if (!this.state) {
+            this.reset();
+
+            const trace = this.solution.solve();
+            this.state = { trace, stepIndex: 0 };
+
+            this.part.begin();
+        }
+
+        this.abortController.abort();
+        this.part.step(this.state.trace[this.state.stepIndex]);
+        this.state.stepIndex++;
+        this.abortController = new AbortController();
     }
 }
 
-class Part1Trace {
+function createNumberItem(value: string): { item: HTMLLIElement, text: HTMLSpanElement } {
+    const item = document.createElement("li");
+    item.classList.add(
+        "flex",            // Flex container
+        "items-center",    // Center items vertically
+        "justify-center",  // Center items horizontally
+        "text-3xl",        // Large text size
+        "font-extrabold",  // Extra bold text
+        "w-16",            // Fixed width
+        "h-16",            // Fixed height
+        "rounded-xl",      // Rounded corners
+        "shadow-2xl",      // Shadow
+        "transition-all",  // Smooth transition
+        "ease-in-out",     // Ease-in-out timing function
+        "duration-300",    // 300ms transition duration
+        "bg-neutral-700"   // Background color
+    );
+
+    const text = document.createElement("span");
+    text.textContent = value;
+    item.appendChild(text);
+
+    return { item, text };
+}
+
+function createColumnItems(container: HTMLUListElement, values: number[]): { item: HTMLLIElement, text: HTMLSpanElement }[] {
+    container.innerHTML = ""; // Clear the container
+    return values.map(value => {
+        const item = createNumberItem(value.toString());
+        container.appendChild(item.item);
+        return item;
+    });
+}
+
+function highlightItemIn(element: { item: HTMLLIElement, text: HTMLSpanElement }) {
+    element.item.classList.remove("bg-neutral-700");
+    element.item.classList.add(
+        "bg-green-500",    // Green background on highlight
+        "transform",       // Enable scaling
+        "scale-110"        // Slightly enlarge the item
+    );
+}
+
+function highlightItemOut(element: { item: HTMLLIElement, text: HTMLSpanElement }) {
+    element.item.classList.remove("bg-green-500");
+    element.item.classList.add("bg-neutral-700");
+}
+
+function highlightItemPopOut(element: { item: HTMLLIElement, text: HTMLSpanElement }) {
+    const item = element.item;
+
+    // Add a transition to scale and opacity, then shrink the item
+    item.classList.add(
+        "transform-all", // Enable scaling
+        "scale-0", // Shrink the item to 0
+        "opacity-0", // Fade the item out
+    );
+
+    // After the transition ends, hide the element to make space
+    setTimeout(() => {
+        item.classList.add("hidden");
+    }, 300); // Match the duration of the transition
+}
+
+type Part1TraceItemInput = {
+    kind: "input";
     leftColumn: number[];
     rightColumn: number[];
-    steps: Part1TraceItem[];
+};
 
-    constructor(leftColumn: number[], rightColumn: number[]) {
-        this.leftColumn = leftColumn;
-        this.rightColumn = rightColumn;
-        this.steps = [];
-    }
+type Part1TraceItemSelect = {
+    kind: "select";
+    leftIndex: number;
+    rightIndex: number;
+};
 
-    addStep(leftIndex: number, rightIndex: number, l1Distance: number, accumulatedDistance: number) {
-        this.steps.push(new Part1TraceItem(leftIndex, rightIndex, l1Distance, accumulatedDistance));
-    }
-}
+type Part1TraceItemPop = {
+    kind: "pop";
+    leftIndex: number;
+    rightIndex: number;
+};
 
-class Part1Solution {
+type Part1TraceItemL1Distance = {
+    kind: "l1-distance";
+    leftNumber: number;
+    rightNumber: number;
+    l1Distance: number;
+};
+
+type Part1TraceItemAccumulatedDistance = {
+    kind: "accumulated-distance";
+    accumulatedDistance: number;
+};
+
+type Part1TraceItem = Part1TraceItemInput | Part1TraceItemSelect | Part1TraceItemPop | Part1TraceItemL1Distance | Part1TraceItemAccumulatedDistance;
+
+class Part1Solution implements Solution<Part1TraceItem> {
     private input: string;
 
     constructor(input: string) {
@@ -45,9 +187,11 @@ class Part1Solution {
         }, [[], []] as [number[], number[]]);
     }
 
-    solve(): Part1Trace {
+    solve(): Trace<Part1TraceItem> {
+        const trace: Trace<Part1TraceItem> = [];
+
         const [xs, ys] = this.parseInput(this.input);
-        const trace = new Part1Trace(xs, ys);
+        trace.push({ kind: "input", leftColumn: xs, rightColumn: ys });
 
         const leftIndexes = xs
             .map((value, index) => ({ value, index }))
@@ -63,325 +207,117 @@ class Part1Solution {
         for (let i = 0; i < leftIndexes.length; i++) {
             const leftIndex = leftIndexes[i];
             const rightIndex = rightIndexes[i];
+            trace.push({ kind: "select", leftIndex, rightIndex });
 
             const left = xs[leftIndex];
             const right = ys[rightIndex];
+            trace.push({ kind: "pop", leftIndex, rightIndex });
+
             const l1Distance = Math.abs(left - right);
+            trace.push({ kind: "l1-distance", leftNumber: left, rightNumber: right, l1Distance });
 
             accumulatedDistance += l1Distance;
-            trace.addStep(leftIndex, rightIndex, l1Distance, accumulatedDistance);
+            trace.push({ kind: "accumulated-distance", accumulatedDistance });
         }
 
         return trace;
     }
 }
 
-// Part2
-
-class Part2TraceItem {
-    leftIndex: number;
-    rightIndices: number[];
-    similarityScore: number;
-    accumulatedScore: number;
-
-    constructor(leftIndex: number, rightIndices: number[], similarityScore: number, accumulatedScore: number) {
-        this.leftIndex = leftIndex;
-        this.rightIndices = rightIndices;
-        this.similarityScore = similarityScore;
-        this.accumulatedScore = accumulatedScore;
-    }
-}
-
-class Part2Trace {
-    leftColumn: number[];
-    rightColumn: number[];
-    steps: Part2TraceItem[];
-
-    constructor(leftColumn: number[], rightColumn: number[]) {
-        this.leftColumn = leftColumn;
-        this.rightColumn = rightColumn;
-        this.steps = [];
-    }
-
-    addStep(leftIndex: number, rightIndices: number[], similarityScore: number, accumulatedScore: number) {
-        this.steps.push(new Part2TraceItem(leftIndex, rightIndices, similarityScore, accumulatedScore));
-    }
-}
-
-class Part2Solution {
-    private input: string;
-
-    constructor(input: string) {
-        this.input = input;
-    }
-
-    private parseInput(input: string): [number[], number[]] {
-        return input.split("\n").reduce(([xs, ys], line) => {
-            const [x, y] = line.split("   ").map(Number);
-            xs.push(x);
-            ys.push(y);
-            return [xs, ys];
-        }, [[], []] as [number[], number[]]);
-    }
-
-    solve(): Part2Trace {
-        const [xs, ys] = this.parseInput(this.input);
-        const trace = new Part2Trace(xs, ys);
-
-        let accumulatedScore = 0;
-        for (let leftIndex = 0; leftIndex < xs.length; leftIndex++) {
-            // Find all the occurrences of the current value in the right column
-            const rightIndices = ys
-                .map((value, index) => ({ value, index }))
-                .filter(item => item.value === xs[leftIndex])
-                .map(item => item.index);
-
-            // Calculate the similarity score = left * right occurrences
-            const similarityScore = xs[leftIndex] * rightIndices.length;
-
-            // Calculate the accumulated score
-            accumulatedScore += similarityScore;
-
-            trace.addStep(leftIndex, rightIndices, similarityScore, accumulatedScore);
-        }
-
-        return trace;
-    }
-}
-
-// HTML
-class Part {
-    inputDiv: HTMLDivElement;
-    textareaInput: HTMLTextAreaElement;
-    solutionDiv: HTMLDivElement;
-    controlDiv: HTMLDivElement;
-    solveButton: HTMLButtonElement;
-    stepButton: HTMLButtonElement;
-    resetButton: HTMLButtonElement;
-
-    constructor(name: string) {
-        this.inputDiv = document.getElementById(`${name}-input`) as HTMLDivElement;
-        this.textareaInput = document.getElementById(`${name}-textarea`) as HTMLTextAreaElement;
-        this.solutionDiv = document.getElementById(`${name}-solution`) as HTMLDivElement;
-        this.controlDiv = document.getElementById(`${name}-control`) as HTMLDivElement;
-        this.solveButton = document.getElementById(`${name}-solve`) as HTMLButtonElement;
-        this.stepButton = document.getElementById(`${name}-step`) as HTMLButtonElement;
-        this.resetButton = document.getElementById(`${name}-reset`) as HTMLButtonElement;
-
-        this.textareaInput.rows = 6;
-        this.textareaInput.value = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
-    }
-}
-
-class Part1Animator {
-    private abortController: AbortController;
+class Part1Animator implements PartAnimator<Part1TraceItem> {
     private inputDiv: HTMLDivElement;
     private solutionDiv: HTMLDivElement;
-    private stepState?: { trace: Part1Trace, stepIndex: number, kind?: "in" | "out" };
-    private animationState?: { answerNumber: HTMLSpanElement, leftItems: { item: HTMLLIElement, text: HTMLSpanElement }[], rightItems: { item: HTMLLIElement, text: HTMLSpanElement }[], lhsItem: { text: HTMLSpanElement }, rhsItem: { text: HTMLSpanElement }, l1Item: { text: HTMLSpanElement } };
+
+    private answerNumber?: HTMLSpanElement;
+    private leftColumn?: HTMLUListElement;
+    private rightColumn?: HTMLUListElement;
+    private leftItems?: { item: HTMLLIElement, text: HTMLSpanElement }[];
+    private rightItems?: { item: HTMLLIElement, text: HTMLSpanElement }[];
+    private lhsItem?: HTMLSpanElement;
+    private rhsItem?: HTMLSpanElement;
+    private l1Item?: HTMLSpanElement;
 
     constructor(inputDiv: HTMLDivElement, solutionDiv: HTMLDivElement) {
-        this.abortController = new AbortController();
         this.inputDiv = inputDiv;
         this.solutionDiv = solutionDiv;
 
         this.reset();
     }
 
-    reset() {
-        this.abortController.abort();
-        this.abortController = new AbortController();
-
+    reset(): void {
         this.inputDiv.classList.remove("hidden");
         this.solutionDiv.classList.add("hidden");
-        this.solutionDiv.innerHTML = ""; // Clear previous animations
+        this.solutionDiv.innerHTML = "";
 
-        this.stepState = undefined;
-        this.animationState = undefined;
+        this.answerNumber = undefined;
+        this.leftColumn = undefined;
+        this.rightColumn = undefined;
+        this.leftItems = undefined;
+        this.rightItems = undefined;
+        this.lhsItem = undefined;
+        this.rhsItem = undefined;
+        this.l1Item = undefined;
     }
 
-    async solve(input: string) {
-        if (!this.stepState) {
-            this.reset();
+    begin(): void {
+        this.reset();
 
-            this.inputDiv.classList.add("hidden");
-            this.solutionDiv.classList.remove("hidden");
+        this.create();
 
-            const trace = new Part1Solution(input).solve();
-            this.stepState = { trace, stepIndex: 0 };
-
-            this.animationState = this.beginAnimate();
-        }
-
-        const abortController = this.abortController;
-        while (this.stepState.stepIndex < this.stepState.trace.steps.length) {
-            if (abortController.signal.aborted) {
-                return;
-            }
-            await this.animateStep();
-        }
+        this.inputDiv.classList.add("hidden");
+        this.solutionDiv.classList.remove("hidden");
     }
 
-    step(input: string) {
-        if (this.stepState && this.stepState.stepIndex >= this.stepState.trace.steps.length) {
-            return;
-        }
-
-        if (!this.stepState) {
-            this.reset();
-
-            this.inputDiv.classList.add("hidden");
-            this.solutionDiv.classList.remove("hidden");
-
-            const trace = new Part1Solution(input).solve();
-            this.stepState = { trace, stepIndex: 0, kind: "in" };
-
-            this.animationState = this.beginAnimate();
-        }
-
-        // Make sure to cancel the previous animation
-        this.abortController.abort();
-        this.abortController = new AbortController();
-
-        if (this.stepState.kind === "in") {
-            this.stepState.kind = "out";
-            this.animateStepIn();
-        } else {
-            this.stepState.kind = "in";
-            this.animateStepOut();
+    step(step: Part1TraceItem): void {
+        switch (step.kind) {
+        case "input":
+            this.createInput(step);
+            break;
+        case "select":
+            this.animateSelect(step);
+            break;
+        case "pop":
+            this.animatePop(step);
+            break;
+        case "l1-distance":
+            this.animateL1Distance(step);
+            break;
+        case "accumulated-distance":
+            this.animateAccumulatedDistance(step);
+            break;
         }
     }
 
-    private createNumberItem(value: string): { item: HTMLLIElement, text: HTMLSpanElement } {
-        const item = document.createElement("li");
-        item.classList.add(
-            "flex",            // Flex container
-            "items-center",    // Center items vertically
-            "justify-center",  // Center items horizontally
-            "text-3xl",        // Large text size
-            "font-extrabold",  // Extra bold text
-            "w-16",            // Fixed width
-            "h-16",            // Fixed height
-            "rounded-xl",      // Rounded corners
-            "shadow-2xl",      // Shadow
-            "transition-all",  // Smooth transition
-            "ease-in-out",     // Ease-in-out timing function
-            "duration-300",    // 300ms transition duration
-            "bg-neutral-700"   // Background color
-        );
-
-        const text = document.createElement("span");
-        text.textContent = value;
-        item.appendChild(text);
-
-        return { item, text };
+    private createInput(input: Part1TraceItemInput) {
+        this.leftItems = createColumnItems(this.leftColumn!, input.leftColumn);
+        this.rightItems = createColumnItems(this.rightColumn!, input.rightColumn);
     }
 
-    private createColumnItems(container: HTMLUListElement, values: number[]): { item: HTMLLIElement, text: HTMLSpanElement }[] {
-        container.innerHTML = ""; // Clear the container
-        return values.map(value => {
-            const item = this.createNumberItem(value.toString());
-            container.appendChild(item.item);
-            return item;
-        });
+    private animateSelect(select: Part1TraceItemSelect) {
+        highlightItemIn(this.leftItems![select.leftIndex]);
+        highlightItemIn(this.rightItems![select.rightIndex]);
     }
 
-    private updateMiddlePad(
-        lhsItem: { text: HTMLSpanElement },
-        rhsItem: { text: HTMLSpanElement },
-        l1Item: { text: HTMLSpanElement },
-        leftValue: string,
-        rightValue: string,
-        l1Value: string
-    ) {
-        lhsItem.text.textContent = leftValue;
-        rhsItem.text.textContent = rightValue;
-        l1Item.text.textContent = l1Value;
+    private animatePop(pop: Part1TraceItemPop) {
+        highlightItemPopOut(this.leftItems![pop.leftIndex]);
+        highlightItemPopOut(this.rightItems![pop.rightIndex]);
     }
 
-    private beginAnimate() {
-        const trace = this.stepState!.trace;
-
-        const answerNumber = this.createAnswerContainer();
-        const { leftColumn, rightColumn, lhsItem, rhsItem, l1Item } = this.createPuzzleLayout();
-
-        const leftItems = this.createColumnItems(leftColumn, trace.leftColumn);
-        const rightItems = this.createColumnItems(rightColumn, trace.rightColumn);
-
-        return { answerNumber, leftItems, rightItems, lhsItem, rhsItem, l1Item };
+    private animateL1Distance(l1Distance: Part1TraceItemL1Distance) {
+        this.lhsItem!.textContent = l1Distance.leftNumber.toString();
+        this.rhsItem!.textContent = l1Distance.rightNumber.toString();
+        this.l1Item!.textContent = l1Distance.l1Distance.toString();
     }
 
-    private async animateStep() {
-        this.animateStepIn();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        this.animateStepOut();
+    private animateAccumulatedDistance(accumulatedDistance: Part1TraceItemAccumulatedDistance) {
+        this.lhsItem!.textContent = "";
+        this.rhsItem!.textContent = "";
+        this.l1Item!.textContent = "";
+        this.answerNumber!.textContent = accumulatedDistance.accumulatedDistance.toString();
     }
 
-    private animateStepIn() {
-        // Deconstruct the step
-        const { trace, stepIndex } = this.stepState!;
-        const { leftIndex, rightIndex, l1Distance } = trace.steps[stepIndex];
-        const { leftItems, rightItems, lhsItem, rhsItem, l1Item } = this.animationState!;
-
-        // Highlight the current selected items and increase the scale of them a little
-        this.highlighItemIn(leftItems, leftIndex);
-        this.highlighItemIn(rightItems, rightIndex);
-
-        // Update middle pad
-        this.updateMiddlePad(
-            lhsItem,
-            rhsItem,
-            l1Item,
-            trace.leftColumn[leftIndex].toString(),
-            trace.rightColumn[rightIndex].toString(),
-            l1Distance.toString()
-        );
-    }
-
-    private animateStepOut() {
-        // Deconstruct the step
-        const { trace, stepIndex } = this.stepState!;
-        const { leftIndex, rightIndex, accumulatedDistance } = trace.steps[stepIndex];
-        const { answerNumber, leftItems, rightItems, lhsItem, rhsItem, l1Item } = this.animationState!;
-
-        // Update accumulated distance
-        answerNumber.textContent = accumulatedDistance.toString();
-
-        this.highlighItemPopOut(leftItems, leftIndex);
-        this.highlighItemPopOut(rightItems, rightIndex);
-
-        // Clear middle pad
-        this.updateMiddlePad(lhsItem, rhsItem, l1Item, "", "", "");
-
-        this.stepState!.stepIndex++;
-    }
-
-    private highlighItemIn(elements: { item: HTMLLIElement, text: HTMLSpanElement }[], index: number) {
-        elements[index].item.classList.remove("bg-neutral-700");
-        elements[index].item.classList.add(
-            "bg-green-500",    // Green background on highlight
-            "transform",       // Enable scaling
-            "scale-110"        // Slightly enlarge the item
-        );
-    }
-
-    private highlighItemPopOut(elements: { item: HTMLLIElement, text: HTMLSpanElement }[], index: number) {
-        const item = elements[index].item;
-
-        // Add a transition to scale and opacity, then shrink the item
-        item.classList.add(
-            "transform", // Enable scaling
-            "scale-0", // Shrink the item to 0
-            "opacity-0", // Fade the item out
-        );
-
-        // After the transition ends, hide the element to make space
-        setTimeout(() => {
-            item.classList.add("hidden");
-        }, 300); // Match the duration of the transition
-    }
-
-    private createAnswerContainer(): HTMLSpanElement {
+    private create() {
+        // Create the answer container
         const answerDiv = document.createElement("div");
         answerDiv.classList.add(
             "text-2xl",       // Large text size
@@ -396,14 +332,10 @@ class Part1Animator {
         answerText.textContent = "Answer: ";
         answerDiv.appendChild(answerText);
 
-        const answerNumber = document.createElement("span");
-        answerNumber.textContent = "0";
-        answerDiv.appendChild(answerNumber);
+        this.answerNumber = document.createElement("span");
+        this.answerNumber.textContent = "0";
+        answerDiv.appendChild(this.answerNumber);
 
-        return answerNumber;
-    }
-
-    private createPuzzleLayout() {
         // Create the main puzzle container
         const puzzleDiv = document.createElement("div");
         puzzleDiv.classList.add(
@@ -419,8 +351,8 @@ class Part1Animator {
         this.solutionDiv.appendChild(puzzleDiv);
 
         // Create the left column container
-        const leftColumn = document.createElement("ul");
-        leftColumn.classList.add(
+        this.leftColumn = document.createElement("ul");
+        this.leftColumn.classList.add(
             "flex",            // Flex container
             "grow",            // Allow the container to grow
             "flex-col",        // Arrange children in a column
@@ -435,7 +367,7 @@ class Part1Animator {
             "ease-in-out",     // Timing function for transition
             "duration-300"     // 300ms duration for transitions
         );
-        puzzleDiv.appendChild(leftColumn);
+        puzzleDiv.appendChild(this.leftColumn);
 
         // Create the middle pad container
         const middlePad = document.createElement("div");
@@ -452,8 +384,8 @@ class Part1Animator {
         puzzleDiv.appendChild(middlePad);
 
         // Create the right column container
-        const rightColumn = document.createElement("ul");
-        rightColumn.classList.add(
+        this.rightColumn = document.createElement("ul");
+        this.rightColumn.classList.add(
             "flex",            // Flex container
             "grow",            // Allow the container to grow
             "flex-col",        // Arrange children in a column
@@ -468,7 +400,7 @@ class Part1Animator {
             "ease-in-out",     // Timing function for transition
             "duration-300"     // 300ms duration for transitions
         );
-        puzzleDiv.appendChild(rightColumn);
+        puzzleDiv.appendChild(this.rightColumn);
 
         // Create the top row of the middle pad
         const middleTopRow = document.createElement("ul");
@@ -490,9 +422,9 @@ class Part1Animator {
         );
         middleTopRow.appendChild(absBarL);
 
-
         // Create left-hand side number item
-        const lhsItem = this.createNumberItem("");
+        const lhsItem = createNumberItem("");
+        this.lhsItem = lhsItem.text;
         middleTopRow.appendChild(lhsItem.item);
 
         // Create minus sign item
@@ -506,7 +438,8 @@ class Part1Animator {
         middleTopRow.appendChild(minusItem);
 
         // Create right-hand side number item
-        const rhsItem = this.createNumberItem("");
+        const rhsItem = createNumberItem("");
+        this.rhsItem = rhsItem.text;
         middleTopRow.appendChild(rhsItem.item);
 
         const absBarR = document.createElement("li");
@@ -540,232 +473,203 @@ class Part1Animator {
         middleBottomRow.appendChild(equalItem);
 
         // Create L1 distance item
-        const l1Item = this.createNumberItem("");
+        const l1Item = createNumberItem("");
+        this.l1Item = l1Item.text;
         middleBottomRow.appendChild(l1Item.item);
 
-        return { leftColumn, rightColumn, lhsItem, rhsItem, l1Item };
+        this.leftItems = [];
+        this.rightItems = [];
     }
 }
 
-class Part2Animator {
-    private abortController: AbortController;
+
+
+// Part2
+
+type Part2TraceItemInput = {
+    kind: "input";
+    leftColumn: number[];
+    rightColumn: number[];
+};
+
+type Part2TraceItemSelect = {
+    kind: "select";
+    leftIndex: number;
+};
+
+type Part2TraceItemFind = {
+    kind: "find";
+    rightIndices: number[];
+};
+
+type Part2TraceItemPop = {
+    kind: "pop";
+    leftIndex: number;
+    rightIndices: number[];
+};
+
+type Part2TraceItemSimilarity = {
+    kind: "similarity";
+    leftNumber: number;
+    rightNumber: number;
+    similarityScore: number;
+};
+
+type Part2TraceItemAccumulated = {
+    kind: "accumulated";
+    accumulatedScore: number;
+};
+
+type Part2TraceItem = Part2TraceItemInput | Part2TraceItemSelect | Part2TraceItemFind | Part2TraceItemPop | Part2TraceItemSimilarity | Part2TraceItemAccumulated;
+
+class Part2Solution implements Solution<Part2TraceItem> {
+    private input: string;
+
+    constructor(input: string) {
+        this.input = input;
+    }
+
+    private parseInput(input: string): [number[], number[]] {
+        return input.split("\n").reduce(([xs, ys], line) => {
+            const [x, y] = line.split("   ").map(Number);
+            xs.push(x);
+            ys.push(y);
+            return [xs, ys];
+        }, [[], []] as [number[], number[]]);
+    }
+
+    solve(): Trace<Part2TraceItem> {
+        const trace: Trace<Part2TraceItem> = [];
+
+        const [xs, ys] = this.parseInput(this.input);
+        trace.push({ kind: "input", leftColumn: xs, rightColumn: ys });
+
+        let accumulatedScore = 0;
+        for (let leftIndex = 0; leftIndex < xs.length; leftIndex++) {
+            trace.push({ kind: "select", leftIndex });
+
+            // Find all the occurrences of the current value in the right column
+            const rightIndices = ys
+                .map((value, index) => ({ value, index }))
+                .filter(item => item.value === xs[leftIndex])
+                .map(item => item.index);
+            trace.push({ kind: "find", rightIndices });
+
+            trace.push({ kind: "pop", leftIndex, rightIndices });
+
+            // Calculate the similarity score = left * right occurrences
+            const similarityScore = xs[leftIndex] * rightIndices.length;
+            trace.push({ kind: "similarity", leftNumber: xs[leftIndex], rightNumber: rightIndices.length, similarityScore });
+
+            // Calculate the accumulated score
+            accumulatedScore += similarityScore;
+            trace.push({ kind: "accumulated", accumulatedScore });
+        }
+
+        return trace;
+    }
+}
+
+class Part2Animator implements PartAnimator<Part2TraceItem> {
     private inputDiv: HTMLDivElement;
     private solutionDiv: HTMLDivElement;
-    private stepState?: { trace: Part2Trace, stepIndex: number, kind?: "in" | "out" };
-    private animationState?: { answerNumber: HTMLSpanElement, leftItems: { item: HTMLLIElement, text: HTMLSpanElement }[], rightItems: { item: HTMLLIElement, text: HTMLSpanElement }[], lhsItem: { text: HTMLSpanElement }, rhsItem: { text: HTMLSpanElement }, l1Item: { text: HTMLSpanElement } };
+
+    private answerNumber?: HTMLSpanElement;
+    private leftColumn?: HTMLUListElement;
+    private rightColumn?: HTMLUListElement;
+    private leftItems?: { item: HTMLLIElement, text: HTMLSpanElement }[];
+    private rightItems?: { item: HTMLLIElement, text: HTMLSpanElement }[];
+    private lhsItem?: HTMLSpanElement;
+    private rhsItem?: HTMLSpanElement;
+    private similarityItem?: HTMLSpanElement;
 
     constructor(inputDiv: HTMLDivElement, solutionDiv: HTMLDivElement) {
-        this.abortController = new AbortController();
         this.inputDiv = inputDiv;
         this.solutionDiv = solutionDiv;
 
         this.reset();
     }
 
-    reset() {
-        this.abortController.abort();
-        this.abortController = new AbortController();
-
+    reset(): void {
         this.inputDiv.classList.remove("hidden");
         this.solutionDiv.classList.add("hidden");
-        this.solutionDiv.innerHTML = ""; // Clear previous animations
+        this.solutionDiv.innerHTML = "";
 
-        this.stepState = undefined;
-        this.animationState = undefined;
+        this.answerNumber = undefined;
+        this.leftColumn = undefined;
+        this.rightColumn = undefined;
+        this.leftItems = undefined;
+        this.rightItems = undefined;
+        this.lhsItem = undefined;
+        this.rhsItem = undefined;
+        this.similarityItem = undefined;
     }
 
-    async solve(input: string) {
-        if (!this.stepState) {
-            this.reset();
+    begin(): void {
+        this.reset();
 
-            this.inputDiv.classList.add("hidden");
-            this.solutionDiv.classList.remove("hidden");
+        this.create();
 
-
-            const trace = new Part2Solution(input).solve();
-            this.stepState = { trace, stepIndex: 0 };
-
-            this.animationState = this.beginAnimate();
-        }
-
-        const abortController = this.abortController;
-        while (this.stepState.stepIndex < this.stepState.trace.steps.length) {
-            if (abortController.signal.aborted) {
-                return;
-            }
-            await this.animateStep();
-        }
+        this.inputDiv.classList.add("hidden");
+        this.solutionDiv.classList.remove("hidden");
     }
 
-    step(input: string) {
-        if (this.stepState && this.stepState.stepIndex >= this.stepState.trace.steps.length) {
-            return;
-        }
-
-        if (!this.stepState) {
-            this.reset();
-
-            this.inputDiv.classList.add("hidden");
-            this.solutionDiv.classList.remove("hidden");
-
-            const trace = new Part2Solution(input).solve();
-            this.stepState = { trace, stepIndex: 0, kind: "in" };
-
-            this.animationState = this.beginAnimate();
-        }
-
-        // Make sure to cancel the previous animation
-        this.abortController.abort();
-        this.abortController = new AbortController();
-
-        if (this.stepState.kind === "in") {
-            this.stepState.kind = "out";
-            this.animateStepIn();
-        } else {
-            this.stepState.kind = "in";
-            this.animateStepOut();
+    step(step: Part2TraceItem): void {
+        switch (step.kind) {
+        case "input":
+            this.createInput(step);
+            break;
+        case "select":
+            this.animateSelect(step);
+            break;
+        case "find":
+            this.animateFind(step);
+            break;
+        case "pop":
+            this.animatePop(step);
+            break;
+        case "similarity":
+            this.animateSimilarity(step);
+            break;
+        case "accumulated":
+            this.animateAccumulated(step);
+            break;
         }
     }
 
-    private createNumberItem(value: string): { item: HTMLLIElement, text: HTMLSpanElement } {
-        const item = document.createElement("li");
-        item.classList.add(
-            "flex",            // Flex container
-            "items-center",    // Center items vertically
-            "justify-center",  // Center items horizontally
-            "text-3xl",        // Large text size
-            "font-extrabold",  // Extra bold text
-            "w-16",            // Fixed width
-            "h-16",            // Fixed height
-            "rounded-xl",      // Rounded corners
-            "shadow-2xl",      // Shadow
-            "transition-all",  // Smooth transition
-            "ease-in-out",     // Ease-in-out timing function
-            "duration-300",    // 300ms transition duration
-            "bg-neutral-700"   // Background color
-        );
-
-        const text = document.createElement("span");
-        text.textContent = value;
-        item.appendChild(text);
-
-        return { item, text };
+    private createInput(input: Part2TraceItemInput) {
+        this.leftItems = createColumnItems(this.leftColumn!, input.leftColumn);
+        this.rightItems = createColumnItems(this.rightColumn!, input.rightColumn);
     }
 
-    private createColumnItems(container: HTMLUListElement, values: number[]): { item: HTMLLIElement, text: HTMLSpanElement }[] {
-        container.innerHTML = ""; // Clear the container
-        return values.map(value => {
-            const item = this.createNumberItem(value.toString());
-            container.appendChild(item.item);
-            return item;
-        });
+    private animateSelect(select: Part2TraceItemSelect) {
+        highlightItemIn(this.leftItems![select.leftIndex]);
     }
 
-    private updateMiddlePad(
-        lhsItem: { text: HTMLSpanElement },
-        rhsItem: { text: HTMLSpanElement },
-        l1Item: { text: HTMLSpanElement },
-        leftValue: string,
-        rightValue: string,
-        l1Value: string
-    ) {
-        lhsItem.text.textContent = leftValue;
-        rhsItem.text.textContent = rightValue;
-        l1Item.text.textContent = l1Value;
+    private animateFind(find: Part2TraceItemFind) {
+        find.rightIndices.forEach(rightIndex => highlightItemIn(this.rightItems![rightIndex]));
     }
 
-    private beginAnimate() {
-        const trace = this.stepState!.trace;
-
-        const answerNumber = this.createAnswerContainer();
-        const { leftColumn, rightColumn, lhsItem, rhsItem, l1Item } = this.createPuzzleLayout();
-
-        const leftItems = this.createColumnItems(leftColumn, trace.leftColumn);
-        const rightItems = this.createColumnItems(rightColumn, trace.rightColumn);
-
-        return { answerNumber, leftItems, rightItems, lhsItem, rhsItem, l1Item };
+    private animatePop(pop: Part2TraceItemPop) {
+        highlightItemPopOut(this.leftItems![pop.leftIndex]);
+        pop.rightIndices.forEach(rightIndex => highlightItemOut(this.rightItems![rightIndex]));
     }
 
-    private async animateStep() {
-        this.animateStepIn();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        this.animateStepOut();
+    private animateSimilarity(similarity: Part2TraceItemSimilarity) {
+        this.lhsItem!.textContent = similarity.leftNumber.toString();
+        this.rhsItem!.textContent = similarity.rightNumber.toString();
+        this.similarityItem!.textContent = similarity.similarityScore.toString();
     }
 
-    private animateStepIn() {
-        // Deconstruct the step
-        const { trace, stepIndex } = this.stepState!;
-        const { leftIndex, rightIndices, similarityScore } = trace.steps[stepIndex];
-        const { leftItems, rightItems, lhsItem, rhsItem, l1Item } = this.animationState!;
-
-        // Highlight the current selected items and increase the scale of them a little
-        this.highlighItemIn(leftItems, leftIndex);
-        for (const rightIndex of rightIndices) {
-            this.highlighItemIn(rightItems, rightIndex);
-        }
-
-        // Update middle pad
-        this.updateMiddlePad(
-            lhsItem,
-            rhsItem,
-            l1Item,
-            trace.leftColumn[leftIndex].toString(),
-            rightIndices.length.toString(),
-            similarityScore.toString()
-        );
+    private animateAccumulated(accumulated: Part2TraceItemAccumulated) {
+        this.lhsItem!.textContent = "";
+        this.rhsItem!.textContent = "";
+        this.similarityItem!.textContent = "";
+        this.answerNumber!.textContent = accumulated.accumulatedScore.toString();
     }
 
-    private animateStepOut() {
-        // Deconstruct the step
-        const { trace, stepIndex } = this.stepState!;
-        const { leftIndex, rightIndices, accumulatedScore } = trace.steps[stepIndex];
-        const { answerNumber, leftItems, rightItems, lhsItem, rhsItem, l1Item } = this.animationState!;
-
-        // Update accumulated distance
-        answerNumber.textContent = accumulatedScore.toString();
-
-        this.highlighItemPopOut(leftItems, leftIndex);
-        for (const rightIndex of rightIndices) {
-            this.highlightItemOut(rightItems, rightIndex);
-        }
-
-        // Clear middle pad
-        this.updateMiddlePad(lhsItem, rhsItem, l1Item, "", "", "");
-
-        this.stepState!.stepIndex++;
-    }
-
-    private highlighItemIn(elements: { item: HTMLLIElement, text: HTMLSpanElement }[], index: number) {
-        elements[index].item.classList.remove("bg-neutral-700");
-        elements[index].item.classList.add(
-            "bg-green-500",    // Green background on highlight
-            "transform",       // Enable scaling
-            "scale-110"        // Slightly enlarge the item
-        );
-    }
-
-    private highlighItemPopOut(elements: { item: HTMLLIElement, text: HTMLSpanElement }[], index: number) {
-        const item = elements[index].item;
-
-        // Add a transition to scale and opacity, then shrink the item
-        item.classList.add(
-            "transform", // Enable scaling
-            "scale-0", // Shrink the item to 0
-            "opacity-0", // Fade the item out
-        );
-
-        // After the transition ends, hide the element to make space
-        setTimeout(() => {
-            item.classList.add("hidden");
-        }, 300); // Match the duration of the transition
-    }
-
-    private highlightItemOut(elements: { item: HTMLLIElement, text: HTMLSpanElement }[], index: number) {
-        elements[index].item.classList.remove("bg-green-500");
-        elements[index].item.classList.add("bg-neutral-700");
-    }
-
-    private createAnswerContainer(): HTMLSpanElement {
+    private create() {
+        // Create the answer container
         const answerDiv = document.createElement("div");
         answerDiv.classList.add(
             "text-2xl",       // Large text size
@@ -780,14 +684,10 @@ class Part2Animator {
         answerText.textContent = "Answer: ";
         answerDiv.appendChild(answerText);
 
-        const answerNumber = document.createElement("span");
-        answerNumber.textContent = "0";
-        answerDiv.appendChild(answerNumber);
+        this.answerNumber = document.createElement("span");
+        this.answerNumber.textContent = "0";
+        answerDiv.appendChild(this.answerNumber);
 
-        return answerNumber;
-    }
-
-    private createPuzzleLayout() {
         // Create the main puzzle container
         const puzzleDiv = document.createElement("div");
         puzzleDiv.classList.add(
@@ -803,8 +703,8 @@ class Part2Animator {
         this.solutionDiv.appendChild(puzzleDiv);
 
         // Create the left column container
-        const leftColumn = document.createElement("ul");
-        leftColumn.classList.add(
+        this.leftColumn = document.createElement("ul");
+        this.leftColumn.classList.add(
             "flex",            // Flex container
             "grow",            // Allow the container to grow
             "flex-col",        // Arrange children in a column
@@ -819,7 +719,7 @@ class Part2Animator {
             "ease-in-out",     // Timing function for transition
             "duration-300"     // 300ms duration for transitions
         );
-        puzzleDiv.appendChild(leftColumn);
+        puzzleDiv.appendChild(this.leftColumn);
 
         // Create the middle pad container
         const middlePad = document.createElement("div");
@@ -836,8 +736,8 @@ class Part2Animator {
         puzzleDiv.appendChild(middlePad);
 
         // Create the right column container
-        const rightColumn = document.createElement("ul");
-        rightColumn.classList.add(
+        this.rightColumn = document.createElement("ul");
+        this.rightColumn.classList.add(
             "flex",            // Flex container
             "grow",            // Allow the container to grow
             "flex-col",        // Arrange children in a column
@@ -852,7 +752,7 @@ class Part2Animator {
             "ease-in-out",     // Timing function for transition
             "duration-300"     // 300ms duration for transitions
         );
-        puzzleDiv.appendChild(rightColumn);
+        puzzleDiv.appendChild(this.rightColumn);
 
         // Create the top row of the middle pad
         const middleTopRow = document.createElement("ul");
@@ -867,21 +767,23 @@ class Part2Animator {
         middlePad.appendChild(middleTopRow);
 
         // Create left-hand side number item
-        const lhsItem = this.createNumberItem("");
+        const lhsItem = createNumberItem("");
+        this.lhsItem = lhsItem.text;
         middleTopRow.appendChild(lhsItem.item);
 
-        // Create x sign item
-        const multiplyItem = document.createElement("li");
-        multiplyItem.classList.add(
+        // Create multiply sign item
+        const minusItem = document.createElement("li");
+        minusItem.classList.add(
             "text-3xl",        // Large text size
             "font-extrabold",  // Extra bold text
             "text-red-500"     // Red color for minus sign
         );
-        multiplyItem.textContent = "x";
-        middleTopRow.appendChild(multiplyItem);
+        minusItem.textContent = "x";
+        middleTopRow.appendChild(minusItem);
 
         // Create right-hand side number item
-        const rhsItem = this.createNumberItem("");
+        const rhsItem = createNumberItem("");
+        this.rhsItem = rhsItem.text;
         middleTopRow.appendChild(rhsItem.item);
 
         // Create the bottom row of the middle pad
@@ -906,22 +808,52 @@ class Part2Animator {
         equalItem.textContent = "=";
         middleBottomRow.appendChild(equalItem);
 
-        // Create L1 distance item
-        const l1Item = this.createNumberItem("");
-        middleBottomRow.appendChild(l1Item.item);
+        // Create similarity score item
+        const similarityItem = createNumberItem("");
+        this.similarityItem = similarityItem.text;
+        middleBottomRow.appendChild(similarityItem.item);
 
-        return { leftColumn, rightColumn, lhsItem, rhsItem, l1Item };
+        this.leftItems = [];
+        this.rightItems = [];
+    }
+}
+
+// HTML
+class Part {
+    inputDiv: HTMLDivElement;
+    textareaInput: HTMLTextAreaElement;
+    solutionDiv: HTMLDivElement;
+    controlDiv: HTMLDivElement;
+    solveButton: HTMLButtonElement;
+    stepButton: HTMLButtonElement;
+    resetButton: HTMLButtonElement;
+
+    constructor(name: string) {
+        this.inputDiv = document.getElementById(`${name}-input`) as HTMLDivElement;
+        this.textareaInput = document.getElementById(`${name}-textarea`) as HTMLTextAreaElement;
+        this.solutionDiv = document.getElementById(`${name}-solution`) as HTMLDivElement;
+        this.controlDiv = document.getElementById(`${name}-control`) as HTMLDivElement;
+        this.solveButton = document.getElementById(`${name}-solve`) as HTMLButtonElement;
+        this.stepButton = document.getElementById(`${name}-step`) as HTMLButtonElement;
+        this.resetButton = document.getElementById(`${name}-reset`) as HTMLButtonElement;
+
+        this.textareaInput.rows = 6;
+        this.textareaInput.value = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
     }
 }
 
 const part1 = new Part("part1");
+const part1Solution = new Part1Solution(part1.textareaInput.value);
 const part1Animator = new Part1Animator(part1.inputDiv, part1.solutionDiv);
-part1.solveButton.onclick = () => part1Animator.solve(part1.textareaInput.value);
-part1.stepButton.onclick = () => part1Animator.step(part1.textareaInput.value);
-part1.resetButton.onclick = () => part1Animator.reset();
+const animator1 = new Animator(part1Solution, part1Animator);
+part1.solveButton.onclick = () => animator1.solve();
+part1.stepButton.onclick = () => animator1.step();
+part1.resetButton.onclick = () => animator1.reset();
 
 const part2 = new Part("part2");
+const part2Solution = new Part2Solution(part2.textareaInput.value);
 const part2Animator = new Part2Animator(part2.inputDiv, part2.solutionDiv);
-part2.solveButton.onclick = () => part2Animator.solve(part2.textareaInput.value);
-part2.stepButton.onclick = () => part2Animator.step(part2.textareaInput.value);
-part2.resetButton.onclick = () => part2Animator.reset();
+const animator2 = new Animator(part2Solution, part2Animator);
+part2.solveButton.onclick = () => animator2.solve();
+part2.stepButton.onclick = () => animator2.step();
+part2.resetButton.onclick = () => animator2.reset();
