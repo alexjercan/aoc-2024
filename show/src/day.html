@@ -51,20 +51,11 @@
                     <input id="settings-speed" type="range" min="0" max="10" value="0" class="w-48">
                     <span id="settings-speed-value" class="text-lg">1x</span>
                     <script>
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const initialSpeed = urlParams.has("speed") ? Number(urlParams.get("speed")) : 0;
-
                         const speed = document.getElementById("settings-speed");
                         const speedValue = document.getElementById("settings-speed-value");
 
-                        speed.value = initialSpeed;
-                        speedValue.textContent = `${day.computeSpeed(initialSpeed)}x`;
-
                         speed.addEventListener("input", () => {
                             speedValue.textContent = `${day.computeSpeed(parseInt(speed.value))}x`;
-
-                            urlParams.set("speed", speed.value);
-                            window.history.replaceState(null, "", "?" + urlParams.toString());
                         });
                     </script>
                 </div>
