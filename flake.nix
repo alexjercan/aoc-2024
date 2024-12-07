@@ -42,6 +42,7 @@
             pkgs.swi-prolog
             pkgs.nodejs
             pkgs.pnpm
+            pkgs.vlang
           ];
 
           shellHook = ''
@@ -136,6 +137,18 @@
 
         src = ./day06;
       };
+      packages.aoc2024-day07 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day07";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)" "HOME=$(TMP)"];
+
+        nativeBuildInputs = [
+          pkgs.vlang
+        ];
+
+        src = ./day07;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -145,6 +158,7 @@
           self.packages.${system}.aoc2024-day04
           self.packages.${system}.aoc2024-day05
           self.packages.${system}.aoc2024-day06
+          self.packages.${system}.aoc2024-day07
         ];
         text =
           /*
@@ -195,6 +209,9 @@
 
             echo -e "$IYellow""--- Day 6: Guard Gallivant (JavaScript) ---""$Color_Off"
             aoc2024-day06 < ./input/day06.input
+
+            echo -e "$IRed""--- Day 7: Bridge Repair (VLang) ---""$Color_Off"
+            aoc2024-day07 < ./input/day07.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
