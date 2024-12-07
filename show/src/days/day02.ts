@@ -130,63 +130,48 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
         this.solutionDiv.classList.remove("hidden");
     }
 
-    step(step: Part1TraceItem): void {
+    step(step: Part1TraceItem): number {
         switch (step.kind) {
         case "input":
-            this.createInput(step);
-            break;
+            return this.createInput(step);
         case "check-report":
-            this.checkReport(step);
-            break;
+            return this.checkReport(step);
         case "check-levels":
-            this.checkLevels(step);
-            break;
+            return this.checkLevels(step);
         case "check-levels-put":
-            this.checkLevelsPut(step);
-            break;
+            return this.checkLevelsPut(step);
         case "abs-diff":
-            this.absDiff(step);
-            break;
+            return this.absDiff(step);
         case "valid-diff":
-            this.validDiff(step);
-            break;
+            return this.validDiff(step);
         case "invalid-diff":
-            this.invalidDiff(step);
-            break;
+            return this.invalidDiff(step);
         case "abs-diff-done":
-            this.absDiffDone(step);
-            break;
+            return this.absDiffDone(step);
         case "check-ascending":
-            this.checkAscending(step);
-            break;
+            return this.checkAscending(step);
         case "same-order":
-            this.sameOrder(step);
-            break;
+            return this.sameOrder(step);
         case "different-order":
-            this.differentOrder(step);
-            break;
+            return this.differentOrder(step);
         case "check-ascending-done":
-            this.checkAscendingDone(step);
-            break;
+            return this.checkAscendingDone(step);
         case "valid-report":
-            this.validReport(step);
-            break;
+            return this.validReport(step);
         case "total":
-            this.total(step);
-            break;
+            return this.total(step);
         case "total-done":
-            this.totalDone(step);
-            break;
+            return this.totalDone(step);
         case "invalid-report":
-            this.invalidReport(step);
-            break;
+            return this.invalidReport(step);
         case "report-done":
-            this.reportDone(step);
-            break;
+            return this.reportDone(step);
+        default:
+            throw new Error(`Unknown step kind: ${(step as Part2TraceItem).kind}`);
         }
     }
 
-    private createInput(step: Part1TraceItemInput) {
+    private createInput(step: Part1TraceItemInput): number {
         for (let i = 0; i < step.reports.length; i++) {
             const reportRow = document.createElement("li");
             reportRow.classList.add(
@@ -211,18 +196,24 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             const reportItems = utils.createRowItems(reportRowList, step.reports[i]);
             this.reports!.push(reportItems);
         }
+
+        return 1000;
     }
 
-    private checkReport(step: Part1TraceItemCheckReport) {
+    private checkReport(step: Part1TraceItemCheckReport): number {
         this.reportsColumn!.children[step.index].classList.add("transition-all", "duration-500", "ease-in-out", "scale-110");
+
+        return 1000;
     }
 
-    private checkLevels(step: Part1TraceItemCheckLevels) {
+    private checkLevels(step: Part1TraceItemCheckLevels): number {
         utils.highlightItemIn(this.reports![step.index][step.lhsIndex]);
         utils.highlightItemIn(this.reports![step.index][step.rhsIndex]);
+
+        return 1000;
     }
 
-    private checkLevelsPut(step: Part1TraceItemCheckLevelsPut) {
+    private checkLevelsPut(step: Part1TraceItemCheckLevelsPut): number {
         const lhs = this.reports![step.index][step.lhsIndex];
         this.lhsItem!.textContent = lhs.text.textContent;
         utils.highlightItemOut(lhs);
@@ -230,71 +221,99 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
         const rhs = this.reports![step.index][step.rhsIndex];
         this.rhsItem!.textContent = rhs.text.textContent;
         utils.highlightItemOut(rhs);
+
+        return 1000;
     }
 
-    private absDiff(step: Part1TraceItemAbsDiff) {
+    private absDiff(step: Part1TraceItemAbsDiff): number {
         this.diffItem!.textContent = step.absDiff.toString();
+
+        return 1000;
     }
 
-    private validDiff(_step: Part1TraceItemValidDiff) {
+    private validDiff(_step: Part1TraceItemValidDiff): number {
         this.diffItem!.classList.add("text-green-500");
+
+        return 1000;
     }
 
-    private invalidDiff(_step: Part1TraceItemInvalidDiff) {
+    private invalidDiff(_step: Part1TraceItemInvalidDiff): number {
         this.diffItem!.classList.add("text-red-500");
+
+        return 1000;
     }
 
-    private absDiffDone(_step: Part1TraceItemAbsDiffDone) {
+    private absDiffDone(_step: Part1TraceItemAbsDiffDone): number {
         this.diffItem!.classList.remove("text-green-500", "text-red-500");
+
+        return 1000;
     }
 
-    private checkAscending(step: Part1TraceItemCheckAscending) {
+    private checkAscending(step: Part1TraceItemCheckAscending): number {
         if (step.ascending) {
             this.orderItem!.textContent = "increasing";
         } else {
             this.orderItem!.textContent = "decreasing";
         }
+
+        return 1000;
     }
 
-    private sameOrder(_step: Part1TraceItemSameOrder) {
+    private sameOrder(_step: Part1TraceItemSameOrder): number {
         this.orderItem!.classList.remove("text-red-500", "text-gray-500");
         this.orderItem!.classList.add("text-green-500");
+
+        return 1000;
     }
 
-    private differentOrder(_step: Part1TraceItemDifferentOrder) {
+    private differentOrder(_step: Part1TraceItemDifferentOrder): number {
         this.orderItem!.classList.remove("text-green-500", "text-gray-500");
         this.orderItem!.classList.add("text-red-500");
+
+        return 1000;
     }
 
-    private checkAscendingDone(_step: Part1TraceItemCheckAscendingDone) {
+    private checkAscendingDone(_step: Part1TraceItemCheckAscendingDone): number {
         this.orderItem!.classList.remove("text-green-500", "text-red-500");
         this.orderItem!.classList.add("text-gray-500");
+
+        return 1000;
     }
 
-    private validReport(step: Part1TraceItemValidReport) {
+    private validReport(step: Part1TraceItemValidReport): number {
         this.reportsColumn!.children[step.index].classList.add("bg-green-500");
+
+        return 1000;
     }
 
-    private total(step: Part1TraceItemTotal) {
+    private total(step: Part1TraceItemTotal): number {
         this.answerNumber!.textContent = step.total.toString();
         this.answerNumber!.classList.add("font-bold", "text-yellow-500");
+
+        return 1000;
     }
 
-    private totalDone(_step: Part1TraceItemTotalDone) {
+    private totalDone(_step: Part1TraceItemTotalDone): number {
         this.answerNumber!.classList.remove("font-bold", "text-yellow-500");
+
+        return 1000;
     }
 
-    private invalidReport(step: Part1TraceItemInvalidReport) {
+    private invalidReport(step: Part1TraceItemInvalidReport): number {
         this.reportsColumn!.children[step.index].classList.add("bg-red-500");
+
+        return 1000;
     }
 
-    private reportDone(step: Part1TraceItemDone) {
+    private reportDone(step: Part1TraceItemDone): number {
         this.reportsColumn!.children[step.index].classList.remove("scale-110", "bg-green-500");
         this.reportsColumn!.children[step.index].classList.add("opacity-0", "scale-0");
 
         setTimeout(() => {
             this.reportsColumn!.children[step.index].classList.add("hidden");
         }, 500);
+
+        return 1000;
     }
 
     private create() {
@@ -609,69 +628,53 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         this.solutionDiv.classList.remove("hidden");
     }
 
-    step(step: Part2TraceItem): void {
+    step(step: Part2TraceItem): number {
         switch (step.kind) {
         case "input":
-            this.createInput(step);
-            break;
+            return this.createInput(step);
         case "check-report":
-            this.checkReport(step);
-            break;
+            return this.checkReport(step);
         case "check-levels":
-            this.checkLevels(step);
+            return this.checkLevels(step);
             break;
         case "check-levels-put":
-            this.checkLevelsPut(step);
-            break;
+            return this.checkLevelsPut(step);
         case "abs-diff":
-            this.absDiff(step);
-            break;
+            return this.absDiff(step);
         case "valid-diff":
-            this.validDiff(step);
-            break;
+            return this.validDiff(step);
         case "invalid-diff":
-            this.invalidDiff(step);
-            break;
+            return this.invalidDiff(step);
         case "abs-diff-done":
-            this.absDiffDone(step);
-            break;
+            return this.absDiffDone(step);
         case "check-ascending":
-            this.checkAscending(step);
-            break;
+            return this.checkAscending(step);
         case "same-order":
-            this.sameOrder(step);
-            break;
+            return this.sameOrder(step);
         case "different-order":
-            this.differentOrder(step);
-            break;
+            return this.differentOrder(step);
         case "check-ascending-done":
-            this.checkAscendingDone(step);
-            break;
+            return this.checkAscendingDone(step);
         case "valid-report":
-            this.validReport(step);
-            break;
+            return this.validReport(step);
         case "total":
-            this.total(step);
-            break;
+            return this.total(step);
         case "total-done":
-            this.totalDone(step);
-            break;
+            return this.totalDone(step);
         case "invalid-report":
-            this.invalidReport(step);
-            break;
+            return this.invalidReport(step);
         case "report-done":
-            this.reportDone(step);
-            break;
+            return this.reportDone(step);
         case "remove-level":
-            this.removeLevel(step);
-            break;
+            return this.removeLevel(step);
         case "remove-level-done":
-            this.removeLevelDone(step);
-            break;
+            return this.removeLevelDone(step);
+        default:
+            throw new Error(`Unknown step kind: ${(step as Part2TraceItem).kind}`);
         }
     }
 
-    private createInput(step: Part1TraceItemInput) {
+    private createInput(step: Part1TraceItemInput): number {
         for (let i = 0; i < step.reports.length; i++) {
             const reportRow = document.createElement("li");
             reportRow.classList.add(
@@ -696,18 +699,24 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
             const reportItems = utils.createRowItems(reportRowList, step.reports[i]);
             this.reports!.push(reportItems);
         }
+
+        return 1000;
     }
 
-    private checkReport(step: Part1TraceItemCheckReport) {
+    private checkReport(step: Part1TraceItemCheckReport): number {
         this.reportsColumn!.children[step.index].classList.add("transition-all", "duration-500", "ease-in-out", "scale-110");
+
+        return 1000;
     }
 
-    private checkLevels(step: Part1TraceItemCheckLevels) {
+    private checkLevels(step: Part1TraceItemCheckLevels): number {
         utils.highlightItemIn(this.reports![step.index][step.lhsIndex]);
         utils.highlightItemIn(this.reports![step.index][step.rhsIndex]);
+
+        return 1000;
     }
 
-    private checkLevelsPut(step: Part1TraceItemCheckLevelsPut) {
+    private checkLevelsPut(step: Part1TraceItemCheckLevelsPut): number {
         const lhs = this.reports![step.index][step.lhsIndex];
         this.lhsItem!.textContent = lhs.text.textContent;
         utils.highlightItemOut(lhs);
@@ -715,81 +724,113 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         const rhs = this.reports![step.index][step.rhsIndex];
         this.rhsItem!.textContent = rhs.text.textContent;
         utils.highlightItemOut(rhs);
+
+        return 1000;
     }
 
-    private absDiff(step: Part1TraceItemAbsDiff) {
+    private absDiff(step: Part1TraceItemAbsDiff): number {
         this.diffItem!.textContent = step.absDiff.toString();
+
+        return 1000;
     }
 
-    private validDiff(_step: Part1TraceItemValidDiff) {
+    private validDiff(_step: Part1TraceItemValidDiff): number {
         this.diffItem!.classList.add("text-green-500");
+
+        return 1000;
     }
 
-    private invalidDiff(_step: Part1TraceItemInvalidDiff) {
+    private invalidDiff(_step: Part1TraceItemInvalidDiff): number {
         this.diffItem!.classList.add("text-red-500");
+
+        return 1000;
     }
 
-    private absDiffDone(_step: Part1TraceItemAbsDiffDone) {
+    private absDiffDone(_step: Part1TraceItemAbsDiffDone): number {
         this.diffItem!.classList.remove("text-green-500", "text-red-500");
+
+        return 1000;
     }
 
-    private checkAscending(step: Part1TraceItemCheckAscending) {
+    private checkAscending(step: Part1TraceItemCheckAscending): number {
         if (step.ascending) {
             this.orderItem!.textContent = "increasing";
         } else {
             this.orderItem!.textContent = "decreasing";
         }
+
+        return 1000;
     }
 
-    private sameOrder(_step: Part1TraceItemSameOrder) {
+    private sameOrder(_step: Part1TraceItemSameOrder): number {
         this.orderItem!.classList.remove("text-red-500", "text-gray-500");
         this.orderItem!.classList.add("text-green-500");
+
+        return 1000;
     }
 
-    private differentOrder(_step: Part1TraceItemDifferentOrder) {
+    private differentOrder(_step: Part1TraceItemDifferentOrder): number {
         this.orderItem!.classList.remove("text-green-500", "text-gray-500");
         this.orderItem!.classList.add("text-red-500");
+
+        return 1000;
     }
 
-    private checkAscendingDone(_step: Part1TraceItemCheckAscendingDone) {
+    private checkAscendingDone(_step: Part1TraceItemCheckAscendingDone): number {
         this.orderItem!.classList.remove("text-green-500", "text-red-500");
         this.orderItem!.classList.add("text-gray-500");
+
+        return 1000;
     }
 
-    private validReport(step: Part1TraceItemValidReport) {
+    private validReport(step: Part1TraceItemValidReport): number {
         this.reportsColumn!.children[step.index].classList.add("bg-green-500");
+
+        return 1000;
     }
 
-    private total(step: Part1TraceItemTotal) {
+    private total(step: Part1TraceItemTotal): number {
         this.answerNumber!.textContent = step.total.toString();
         this.answerNumber!.classList.add("font-bold", "text-yellow-500");
+
+        return 1000;
     }
 
-    private totalDone(_step: Part1TraceItemTotalDone) {
+    private totalDone(_step: Part1TraceItemTotalDone): number {
         this.answerNumber!.classList.remove("font-bold", "text-yellow-500");
+
+        return 1000;
     }
 
-    private invalidReport(step: Part1TraceItemInvalidReport) {
+    private invalidReport(step: Part1TraceItemInvalidReport): number {
         this.reportsColumn!.children[step.index].classList.add("bg-red-500");
+
+        return 1000;
     }
 
-    private reportDone(step: Part1TraceItemDone) {
+    private reportDone(step: Part1TraceItemDone): number {
         this.reportsColumn!.children[step.index].classList.remove("scale-110", "bg-green-500");
         this.reportsColumn!.children[step.index].classList.add("opacity-0", "scale-0");
 
         setTimeout(() => {
             this.reportsColumn!.children[step.index].classList.add("hidden");
         }, 500);
+
+        return 1000;
     }
 
-    private removeLevel(step: Part2TraceItemRemoveLevel) {
+    private removeLevel(step: Part2TraceItemRemoveLevel): number {
         const report = this.reports![step.index];
         utils.highlightItemIn(report[step.item], { color: "bg-red-500" });
+
+        return 1000;
     }
 
-    private removeLevelDone(step: Part2TraceItemRemoveLevelDone) {
+    private removeLevelDone(step: Part2TraceItemRemoveLevelDone): number {
         const report = this.reports![step.index];
         utils.highlightItemOut(report[step.item], { color: "bg-red-500" });
+
+        return 1000;
     }
 
     private create() {

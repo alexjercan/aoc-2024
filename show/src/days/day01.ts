@@ -134,52 +134,59 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
         this.solutionDiv.classList.remove("hidden");
     }
 
-    step(step: Part1TraceItem): void {
+    step(step: Part1TraceItem): number {
         switch (step.kind) {
         case "input":
-            this.createInput(step);
-            break;
+            return this.createInput(step);
         case "select":
-            this.animateSelect(step);
-            break;
+            return this.animateSelect(step);
         case "pop":
-            this.animatePop(step);
-            break;
+            return this.animatePop(step);
         case "l1-distance":
-            this.animateL1Distance(step);
-            break;
+            return this.animateL1Distance(step);
         case "accumulated-distance":
-            this.animateAccumulatedDistance(step);
-            break;
+            return this.animateAccumulatedDistance(step);
+        default:
+            throw new Error(`Unknown step kind: ${(step as Part1TraceItem).kind}`);
         }
     }
 
-    private createInput(input: Part1TraceItemInput) {
+    private createInput(input: Part1TraceItemInput): number {
         this.leftItems = utils.createColumnItems(this.leftColumn!, input.leftColumn);
         this.rightItems = utils.createColumnItems(this.rightColumn!, input.rightColumn);
+
+        return 1000;
     }
 
-    private animateSelect(select: Part1TraceItemSelect) {
+    private animateSelect(select: Part1TraceItemSelect): number {
         utils.highlightItemIn(this.leftItems![select.leftIndex]);
         utils.highlightItemIn(this.rightItems![select.rightIndex]);
+
+        return 1000;
     }
 
-    private animatePop(pop: Part1TraceItemPop) {
+    private animatePop(pop: Part1TraceItemPop): number {
         utils.highlightItemPopOut(this.leftItems![pop.leftIndex]);
         utils.highlightItemPopOut(this.rightItems![pop.rightIndex]);
+
+        return 1000;
     }
 
-    private animateL1Distance(l1Distance: Part1TraceItemL1Distance) {
+    private animateL1Distance(l1Distance: Part1TraceItemL1Distance): number {
         this.lhsItem!.textContent = l1Distance.leftNumber.toString();
         this.rhsItem!.textContent = l1Distance.rightNumber.toString();
         this.l1Item!.textContent = l1Distance.l1Distance.toString();
+
+        return 1000;
     }
 
-    private animateAccumulatedDistance(accumulatedDistance: Part1TraceItemAccumulatedDistance) {
+    private animateAccumulatedDistance(accumulatedDistance: Part1TraceItemAccumulatedDistance): number {
         this.lhsItem!.textContent = "";
         this.rhsItem!.textContent = "";
         this.l1Item!.textContent = "";
         this.answerNumber!.textContent = accumulatedDistance.accumulatedDistance.toString();
+
+        return 1000;
     }
 
     private create() {
@@ -488,58 +495,66 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         this.solutionDiv.classList.remove("hidden");
     }
 
-    step(step: Part2TraceItem): void {
+    step(step: Part2TraceItem): number {
         switch (step.kind) {
         case "input":
-            this.createInput(step);
-            break;
+            return this.createInput(step);
         case "select":
-            this.animateSelect(step);
-            break;
+            return this.animateSelect(step);
         case "find":
-            this.animateFind(step);
-            break;
+            return this.animateFind(step);
         case "pop":
-            this.animatePop(step);
-            break;
+            return this.animatePop(step);
         case "similarity":
-            this.animateSimilarity(step);
-            break;
+            return this.animateSimilarity(step);
         case "accumulated":
-            this.animateAccumulated(step);
-            break;
+            return this.animateAccumulated(step);
+        default:
+            throw new Error(`Unknown step kind: ${(step as Part2TraceItem).kind}`);
         }
     }
 
-    private createInput(input: Part2TraceItemInput) {
+    private createInput(input: Part2TraceItemInput): number {
         this.leftItems = utils.createColumnItems(this.leftColumn!, input.leftColumn);
         this.rightItems = utils.createColumnItems(this.rightColumn!, input.rightColumn);
+
+        return 1000;
     }
 
-    private animateSelect(select: Part2TraceItemSelect) {
+    private animateSelect(select: Part2TraceItemSelect): number {
         utils.highlightItemIn(this.leftItems![select.leftIndex]);
+
+        return 1000;
     }
 
-    private animateFind(find: Part2TraceItemFind) {
+    private animateFind(find: Part2TraceItemFind): number {
         find.rightIndices.forEach(rightIndex => utils.highlightItemIn(this.rightItems![rightIndex]));
+
+        return 1000;
     }
 
-    private animatePop(pop: Part2TraceItemPop) {
+    private animatePop(pop: Part2TraceItemPop): number {
         utils.highlightItemPopOut(this.leftItems![pop.leftIndex]);
         pop.rightIndices.forEach(rightIndex => utils.highlightItemOut(this.rightItems![rightIndex]));
+
+        return 1000;
     }
 
-    private animateSimilarity(similarity: Part2TraceItemSimilarity) {
+    private animateSimilarity(similarity: Part2TraceItemSimilarity): number {
         this.lhsItem!.textContent = similarity.leftNumber.toString();
         this.rhsItem!.textContent = similarity.rightNumber.toString();
         this.similarityItem!.textContent = similarity.similarityScore.toString();
+
+        return 1000;
     }
 
-    private animateAccumulated(accumulated: Part2TraceItemAccumulated) {
+    private animateAccumulated(accumulated: Part2TraceItemAccumulated): number {
         this.lhsItem!.textContent = "";
         this.rhsItem!.textContent = "";
         this.similarityItem!.textContent = "";
         this.answerNumber!.textContent = accumulated.accumulatedScore.toString();
+
+        return 1000;
     }
 
     private create() {

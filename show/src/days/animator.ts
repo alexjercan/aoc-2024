@@ -1,3 +1,5 @@
+import { speedEventListener } from "../day";
+
 type Trace<T> = T[];
 
 interface Solution<T> {
@@ -7,13 +9,14 @@ interface Solution<T> {
 interface PartAnimator<T> {
     reset(): void;
     begin(): void;
-    step(step: T): void;
+    step(step: T): number;
 }
 
 class Animator<T> {
     private abortController: AbortController;
     private part: PartAnimator<T>;
     private solution: Solution<T>;
+    speed: number = 1;
 
     private state?: { trace: Trace<T>, stepIndex: number };
 
@@ -21,6 +24,9 @@ class Animator<T> {
         this.abortController = new AbortController();
         this.part = part;
         this.solution = solution;
+        this.speed = 1;
+
+        speedEventListener(speed => { this.speed = speed; });
 
         this.reset();
     }
@@ -48,9 +54,9 @@ class Animator<T> {
         while (!abortController.signal.aborted && this.state.stepIndex < this.state.trace.length) {
             const step = this.state.trace[this.state.stepIndex];
 
-            this.part.step(step);
+            const timeout = this.part.step(step) * (1 / this.speed);
             this.state.stepIndex++;
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, timeout));
         }
     }
 

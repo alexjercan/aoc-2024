@@ -6,16 +6,60 @@
         <title>AoC 2024 | <%= dayName %></title>
     </head>
     <body class="source-code-pro-400 bg-neutral-900 text-white">
-        <header class="flex flex-row items-center p-6">
-            <h1 class="text-3xl font-bold text-green-700">
-                <a href="index.html" class="text-green hover:text-green-300 hover:underline">
-                    Advent of Code 2024
-                </a>
-                -
-                <a href="https://adventofcode.com/2024/day/<%= dayIndex %>" class="text-green-400 hover:text-green-300 hover:underline">
-                    <%= dayName %>
-                </a>
-            </h1>
+        <script src="day.js"></script>
+
+        <header class="flex flex-col items-center p-6">
+            <div class="flex flex-row w-full items-center">
+                <div class="flex flex-row grow items-start">
+                    <h1 class="text-3xl font-bold text-green-700">
+                        <a href="index.html" class="text-green hover:text-green-300 hover:underline">
+                            Advent of Code 2024
+                        </a>
+                        -
+                        <a href="https://adventofcode.com/2024/day/<%= dayIndex %>" class="text-green-400 hover:text-green-300 hover:underline">
+                            <%= dayName %>
+                        </a>
+                    </h1>
+                </div>
+                <div class="flex flex-row items-end">
+                    <div id="settings-toggle" class="flex flex-row items-center transition-all cursor-pointer hover:scale-110">
+                        <img src="assets/gear.svg" alt="O" width="24" height="24" class="ml-4">
+                    </div>
+                </div>
+            </div>
+            <div id="settings-menu" class="hidden flex flex-col items-center space-y-4 w-full bg-neutral-800 p-4 rounded-lg shadow-lg mt-4">
+                <div class="flex flex-row items-center justify-between w-full">
+                    <h2 class="text-xl text-green-400">Settings</h2>
+                    <div id="settings-close" class="cursor-pointer">
+                        <img src="assets/close.svg" alt="X" width="24" height="24">
+                    </div>
+                    <script>
+                        const settingsToggle = document.getElementById('settings-toggle');
+                        const settingsMenu = document.getElementById('settings-menu');
+                        const settingsClose = document.getElementById('settings-close');
+                        settingsToggle.addEventListener('click', () => {
+                            settingsMenu.classList.toggle('hidden');
+                        });
+                        settingsClose.addEventListener('click', () => {
+                            settingsMenu.classList.add('hidden');
+                        });
+                    </script>
+                </div>
+                <hr class="w-full border border-gray-600 my-4">
+                <div class="flex flex-row items-center w-full space-x-4">
+                    <label for="settings-speed" class="text-lg">Speed</label>
+                    <input id="settings-speed" type="range" min="0" max="10" value="0" class="w-48">
+                    <span id="settings-speed-value" class="text-lg">1x</span>
+                    <script>
+                        const speed = document.getElementById('settings-speed');
+                        const speedValue = document.getElementById('settings-speed-value');
+                        speed.addEventListener('input', () => {
+                            const s = day.computeSpeed(parseInt(speed.value));
+                            speedValue.textContent = `${s}x`;
+                        });
+                    </script>
+                </div>
+            </div>
         </header>
 
         <main class="w-full max-w-4xl mx-auto p-6">
