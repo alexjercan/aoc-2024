@@ -1,5 +1,4 @@
-import { Animator, PartAnimator, Solution, Trace } from "./animator";
-import { Part, utils } from "./html";
+import { PartAnimator, Solution, Trace, utils } from "./common";
 
 type Part1TraceItemInput = {
     kind: "input";
@@ -711,28 +710,16 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
     }
 }
 
-const part1 = new Part("part1");
-part1.textareaInput.value = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
-const part1Solution = new Part1Solution(part1.textareaInput.value);
-const part1Animator = new Part1Animator(part1.inputDiv, part1.solutionDiv);
-const animator1 = new Animator(part1Solution, part1Animator);
-part1.textareaInput.onchange = () => part1Solution.setInput(part1.textareaInput.value);
-part1.solveButton.onclick = () => animator1.solve();
-part1.stepButton.onclick = () => animator1.step();
-part1.resetButton.onclick = () => animator1.reset();
+const DESCRIPTION_PART1 = [
+    utils.createParagraph("To solve this problem we need to find the L1 distance between each pair of numbers in the two columns, after we order the numbers in each column."),
+    utils.createParagraph("The L1 distance between two numbers is the absolute difference between them.")
+];
 
-const part2 = new Part("part2");
-part2.textareaInput.value = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
-const part2Solution = new Part2Solution(part2.textareaInput.value);
-const part2Animator = new Part2Animator(part2.inputDiv, part2.solutionDiv);
-const animator2 = new Animator(part2Solution, part2Animator);
-part2.textareaInput.onchange = () => part2Solution.setInput(part2.textareaInput.value);
-part2.solveButton.onclick = () => animator2.solve();
-part2.stepButton.onclick = () => animator2.step();
-part2.resetButton.onclick = () => animator2.reset();
+const DESCRIPTION_PART2 = [
+    utils.createParagraph("To solve this problem we need to find the similarity score of the numbers in the first columns."),
+    utils.createParagraph("The similarity score between two numbers is the product of the left number and the number of occurrences of the right number in the second column.")
+];
 
-part1.descriptionDiv.appendChild(utils.createParagraph("To solve this problem we need to find the L1 distance between each pair of numbers in the two columns, after we order the numbers in each column."));
-part1.descriptionDiv.appendChild(utils.createParagraph("The L1 distance between two numbers is the absolute difference between them."));
+const DEFAULT_INPUT = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
 
-part2.descriptionDiv.appendChild(utils.createParagraph("To solve this problem we need to find the similarity score of the numbers in the first columns."));
-part2.descriptionDiv.appendChild(utils.createParagraph("The similarity score between two numbers is the product of the left number and the number of occurrences of the right number in the second column."));
+export { Part1Solution, Part1Animator, Part2Solution, Part2Animator, DESCRIPTION_PART1, DESCRIPTION_PART2, DEFAULT_INPUT };

@@ -1,25 +1,13 @@
-class Part {
-    inputDiv: HTMLDivElement;
-    textareaInput: HTMLTextAreaElement;
-    solutionDiv: HTMLDivElement;
-    controlDiv: HTMLDivElement;
-    solveButton: HTMLButtonElement;
-    stepButton: HTMLButtonElement;
-    resetButton: HTMLButtonElement;
-    descriptionDiv: HTMLDivElement;
+type Trace<T> = T[];
 
-    constructor(name: string) {
-        this.inputDiv = document.getElementById(`${name}-input`) as HTMLDivElement;
-        this.textareaInput = document.getElementById(`${name}-textarea`) as HTMLTextAreaElement;
-        this.solutionDiv = document.getElementById(`${name}-solution`) as HTMLDivElement;
-        this.controlDiv = document.getElementById(`${name}-control`) as HTMLDivElement;
-        this.solveButton = document.getElementById(`${name}-solve`) as HTMLButtonElement;
-        this.stepButton = document.getElementById(`${name}-step`) as HTMLButtonElement;
-        this.resetButton = document.getElementById(`${name}-reset`) as HTMLButtonElement;
-        this.descriptionDiv = document.getElementById(`${name}-description`) as HTMLDivElement;
+interface Solution<T> {
+    solve(): Trace<T>;
+}
 
-        this.textareaInput.rows = 6;
-    }
+interface PartAnimator<T> {
+    reset(): void;
+    begin(): void;
+    step(step: T): number;
 }
 
 function createNumberItem(value: string): { item: HTMLLIElement, text: HTMLSpanElement } {
@@ -133,4 +121,4 @@ const utils = {
     createOrderedList
 };
 
-export { Part, utils };
+export { Trace, Solution, PartAnimator, utils };

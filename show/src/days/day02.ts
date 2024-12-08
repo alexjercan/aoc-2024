@@ -1,5 +1,4 @@
-import { Animator, PartAnimator, Solution, Trace } from "./animator";
-import { Part, utils } from "./html";
+import { PartAnimator, Solution, Trace, utils } from "./common";
 
 type Part1TraceItemInput = { kind: "input", reports: number[][] };
 type Part1TraceItemCheckReport = { kind: "check-report", index: number };
@@ -1004,30 +1003,18 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
     }
 }
 
-const part1 = new Part("part1");
-part1.textareaInput.value = "7 6 4 2 1\n1 2 7 8 9\n9 7 6 2 1\n1 3 2 4 5\n8 6 4 4 1\n1 3 6 7 9";
-const part1Solution = new Part1Solution(part1.textareaInput.value);
-const part1Animator = new Part1Animator(part1.inputDiv, part1.solutionDiv);
-const animator1 = new Animator(part1Solution, part1Animator);
-part1.textareaInput.onchange = () => part1Solution.setInput(part1.textareaInput.value);
-part1.solveButton.onclick = () => animator1.solve();
-part1.stepButton.onclick = () => animator1.step();
-part1.resetButton.onclick = () => animator1.reset();
+const DESCRIPTION_PART1 = [
+    utils.createParagraph("For part1, we need to find the middle element of each report that satisfies the following conditions:"),
+    utils.createOrderedList([
+        "The absolute difference between adjacent elements is 1, 2, or 3.",
+        "The elements are in increasing or decreasing order (monotonic).",
+    ]),
+];
 
-const part2 = new Part("part2");
-part2.textareaInput.value = "7 6 4 2 1\n1 2 7 8 9\n9 7 6 2 1\n1 3 2 4 5\n8 6 4 4 1\n1 3 6 7 9";
-const part2Solution = new Part2Solution(part2.textareaInput.value);
-const part2Animator = new Part2Animator(part2.inputDiv, part2.solutionDiv);
-const animator2 = new Animator(part2Solution, part2Animator);
-part2.textareaInput.onchange = () => part2Solution.setInput(part2.textareaInput.value);
-part2.solveButton.onclick = () => animator2.solve();
-part2.stepButton.onclick = () => animator2.step();
-part2.resetButton.onclick = () => animator2.reset();
+const DESCRIPTION_PART2 = [
+    utils.createParagraph("For part2, we needed to find the \"almost\" valid reports. These are reports that are valid except for one element that is out of order."),
+];
 
-part1.descriptionDiv.appendChild(utils.createParagraph("For part1, we need to find the middle element of each report that satisfies the following conditions:"));
-part1.descriptionDiv.appendChild(utils.createOrderedList([
-    "The absolute difference between adjacent elements is 1, 2, or 3.",
-    "The elements are in increasing or decreasing order (monotonic).",
-]));
+const DEFAULT_INPUT = "7 6 4 2 1\n1 2 7 8 9\n9 7 6 2 1\n1 3 2 4 5\n8 6 4 4 1\n1 3 6 7 9";
 
-part2.descriptionDiv.appendChild(utils.createParagraph("For part2, we needed to find the \"almost\" valid reports. These are reports that are valid except for one element that is out of order."));
+export { Part1Solution, Part1Animator, Part2Solution, Part2Animator, DESCRIPTION_PART1, DESCRIPTION_PART2, DEFAULT_INPUT };

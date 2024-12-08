@@ -59,6 +59,7 @@ export default {
                     templateParameters: {
                         dayName: name.charAt(0).toUpperCase() + name.slice(1),
                         dayIndex: Number(name.slice(3)).toString(),
+                        dayModule: name,
                     },
                 })
         ),
