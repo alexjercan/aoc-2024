@@ -149,6 +149,18 @@
 
         src = ./day07;
       };
+      packages.aoc2024-day08 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day08";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.ocaml
+        ];
+
+        src = ./day08;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -159,6 +171,7 @@
           self.packages.${system}.aoc2024-day05
           self.packages.${system}.aoc2024-day06
           self.packages.${system}.aoc2024-day07
+          self.packages.${system}.aoc2024-day08
         ];
         text =
           /*
@@ -212,6 +225,9 @@
 
             echo -e "$IRed""--- Day 7: Bridge Repair (VLang) ---""$Color_Off"
             aoc2024-day07 < ./input/day07.input
+
+            echo -e "$IGreen""--- Day 8: Resonant Collinearity (OCaml) ---""$Color_Off"
+            aoc2024-day08 < ./input/day08.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
