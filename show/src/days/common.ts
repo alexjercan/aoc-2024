@@ -1,6 +1,7 @@
 type Trace<T> = T[];
 
 interface Solution<T> {
+    setInput(input: string): void;
     solve(): Trace<T>;
 }
 
@@ -26,6 +27,28 @@ function createNumberItem(value: string): { item: HTMLLIElement, text: HTMLSpanE
         "ease-in-out",     // Ease-in-out timing function
         "duration-300",    // 300ms transition duration
         "bg-neutral-700"   // Background color
+    );
+
+    const text = document.createElement("span");
+    text.textContent = value;
+    item.appendChild(text);
+
+    return { item, text };
+}
+
+function createCharItem(value: string): { item: HTMLLIElement, text: HTMLSpanElement } {
+    const item = document.createElement("li");
+    item.classList.add(
+        "text-2xl",        // Large text size
+        "font-semibold",   // Semi-bold text
+        "text-white",      // White text color
+        "bg-neutral-800",  // Dark background
+        "rounded-lg",      // Rounded corners
+        "shadow-lg",       // Large shadow effect
+        "px-2",             // Padding inside the container
+        "transition-all",  // Smooth transition
+        "ease-in-out",     // Ease-in-out timing function
+        "duration-300",    // 300ms transition duration
     );
 
     const text = document.createElement("span");
@@ -110,6 +133,7 @@ function createOrderedList(items: string[]): HTMLOListElement {
 const utils = {
     // Elements
     createNumberItem,
+    createCharItem,
     createColumnItems,
     createRowItems,
     // Animation

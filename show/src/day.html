@@ -9,7 +9,7 @@
         <script src="day.js"></script>
         <script src="<%= dayModule %>.js"></script>
 
-        <header class="flex flex-col items-center p-6">
+        <header class="flex flex-col items-center p-6 sticky top-0 bg-neutral-900 z-10">
             <div class="flex flex-row w-full items-center">
                 <div class="flex flex-row grow items-start">
                     <h1 class="text-3xl font-bold text-green-700">
@@ -122,7 +122,7 @@
             const module = <%= dayModule %>;
 
             const part1 = new day.Part("part1");
-            part1.textareaInput.value = module.DEFAULT_INPUT;
+            part1.textareaInput.value = module.DEFAULT_INPUT_PART1;
             const part1Solution = new module.Part1Solution(part1.textareaInput.value);
             const part1Animator = new module.Part1Animator(part1.inputDiv, part1.solutionDiv);
             const animator1 = new day.Animator(part1Solution, part1Animator);
@@ -132,7 +132,7 @@
             part1.resetButton.onclick = () => animator1.reset();
 
             const part2 = new day.Part("part2");
-            part2.textareaInput.value = module.DEFAULT_INPUT;
+            part2.textareaInput.value = module.DEFAULT_INPUT_PART2;
             const part2Solution = new module.Part2Solution(part2.textareaInput.value);
             const part2Animator = new module.Part2Animator(part2.inputDiv, part2.solutionDiv);
             const animator2 = new day.Animator(part2Solution, part2Animator);

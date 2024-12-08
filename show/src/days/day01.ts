@@ -720,6 +720,7 @@ const DESCRIPTION_PART2 = [
     utils.createParagraph("The similarity score between two numbers is the product of the left number and the number of occurrences of the right number in the second column.")
 ];
 
-const DEFAULT_INPUT = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
+const DEFAULT_INPUT_PART1 = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
+const DEFAULT_INPUT_PART2 = "3   4\n4   3\n2   5\n1   3\n3   9\n3   3";
 
-export { Part1Solution, Part1Animator, Part2Solution, Part2Animator, DESCRIPTION_PART1, DESCRIPTION_PART2, DEFAULT_INPUT };
+export { Part1Solution, Part1Animator, Part2Solution, Part2Animator, DESCRIPTION_PART1, DESCRIPTION_PART2, DEFAULT_INPUT_PART1, DEFAULT_INPUT_PART2 };
