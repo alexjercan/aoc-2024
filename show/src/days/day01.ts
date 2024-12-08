@@ -44,7 +44,7 @@ class Part1Solution implements Solution<Part1TraceItem> {
     }
 
     private parseInput(input: string): [number[], number[]] {
-        return input.split("\n").reduce(([xs, ys], line) => {
+        return input.trim().split("\n").reduce(([xs, ys], line) => {
             const [x, y] = line.split("   ").map(Number);
             xs.push(x);
             ys.push(y);
@@ -161,6 +161,9 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
         utils.highlightItemIn(this.leftItems![select.leftIndex]);
         utils.highlightItemIn(this.rightItems![select.rightIndex]);
 
+        this.leftItems![select.leftIndex].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        this.rightItems![select.rightIndex].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
@@ -201,7 +204,6 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "h-full",          // Full height
             "grow",            // Allow the container to grow
             "py-4",            // Vertical padding
-            "overflow-y-auto"  // Allow vertical scrolling
         );
         this.solutionDiv.appendChild(puzzleDiv);
 
@@ -213,6 +215,7 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "flex-col",        // Arrange children in a column
             "space-y-2",       // Vertical space between items
             "items-center",    // Center items horizontally
+            "max-h-full",      // Maximum height
             "w-1/3",           // Width is 1/3 of the parent container
             "p-4",             // Padding inside the column
             "bg-neutral-800",  // Dark background
@@ -220,7 +223,8 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "shadow-lg",       // Large shadow effect
             "transition-all",  // Smooth transition effect
             "ease-in-out",     // Timing function for transition
-            "duration-300"     // 300ms duration for transitions
+            "duration-300",    // 300ms duration for transitions
+            "overflow-y-auto"  // Allow vertical scrolling
         );
         puzzleDiv.appendChild(this.leftColumn);
 
@@ -248,6 +252,7 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "flex-col",        // Arrange children in a column
             "space-y-2",       // Vertical space between items
             "items-center",    // Center items horizontally
+            "max-h-full",      // Maximum height
             "w-1/3",           // Width is 1/3 of the parent container
             "p-4",             // Padding inside the column
             "bg-neutral-800",  // Dark background
@@ -255,7 +260,8 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "shadow-lg",       // Large shadow effect
             "transition-all",  // Smooth transition effect
             "ease-in-out",     // Timing function for transition
-            "duration-300"     // 300ms duration for transitions
+            "duration-300",    // 300ms duration for transitions
+            "overflow-y-auto"  // Allow vertical scrolling
         );
         puzzleDiv.appendChild(this.rightColumn);
 
@@ -410,7 +416,7 @@ class Part2Solution implements Solution<Part2TraceItem> {
     }
 
     private parseInput(input: string): [number[], number[]] {
-        return input.split("\n").reduce(([xs, ys], line) => {
+        return input.trim().split("\n").reduce(([xs, ys], line) => {
             const [x, y] = line.split("   ").map(Number);
             xs.push(x);
             ys.push(y);

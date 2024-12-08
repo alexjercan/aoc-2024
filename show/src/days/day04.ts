@@ -23,7 +23,7 @@ class Part1Solution implements Solution<Part1TraceItem> {
     }
 
     private parseInput(input: string): string[][] {
-        return input.split("\n").map(line => line.split(""));
+        return input.trim().split("\n").map(line => line.split(""));
     }
 
     solve(): Trace<Part1TraceItem> {
@@ -244,6 +244,9 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
     private coord(step: Part1TraceItemCoord): number {
         const [row, col] = step.coord;
         this.elements![row][col].item.classList.add("bg-yellow-500");
+
+        this.elements![step.coord[0]][step.coord[1]].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
@@ -427,7 +430,7 @@ class Part2Solution implements Solution<Part2TraceItem> {
     }
 
     private parseInput(input: string): string[][] {
-        return input.split("\n").map(line => line.split(""));
+        return input.trim().split("\n").map(line => line.split(""));
     }
 
     solve(): Trace<Part2TraceItem> {
@@ -582,6 +585,9 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
     private coord(step: Part2TraceItemCoord): number {
         const [row, col] = step.coord;
         this.elements![row][col].item.classList.add("bg-yellow-500");
+
+        this.elements![step.coord[0]][step.coord[1]].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 

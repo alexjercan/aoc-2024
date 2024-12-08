@@ -19,14 +19,14 @@ function createNumberItem(value: string): { item: HTMLLIElement, text: HTMLSpanE
         "justify-center",  // Center items horizontally
         "text-3xl",        // Large text size
         "font-extrabold",  // Extra bold text
-        "w-16",            // Fixed width
-        "h-16",            // Fixed height
+        "min-w-16",            // Fixed width
+        "aspect-square",    // Square aspect ratio
         "rounded-xl",      // Rounded corners
         "shadow-2xl",      // Shadow
         "transition-all",  // Smooth transition
         "ease-in-out",     // Ease-in-out timing function
         "duration-300",    // 300ms transition duration
-        "bg-neutral-700"   // Background color
+        "bg-neutral-700",  // Background color
     );
 
     const text = document.createElement("span");
@@ -41,6 +41,7 @@ function createCharItem(value: string): { item: HTMLLIElement, text: HTMLSpanEle
     item.classList.add(
         "text-2xl",        // Large text size
         "font-semibold",   // Semi-bold text
+        "aspect-square",    // Square aspect ratio
         "text-white",      // White text color
         "bg-neutral-800",  // Dark background
         "rounded-lg",      // Rounded corners

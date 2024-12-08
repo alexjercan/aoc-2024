@@ -32,7 +32,7 @@ class Part1Solution implements Solution<Part1TraceItem> {
     }
 
     private parseInput(input: string): number[][] {
-        return input.split("\n").map(line => line.split(" ").map(Number));
+        return input.trim().split("\n").map(line => line.split(" ").map(Number));
     }
 
     solve(): Trace<Part1TraceItem> {
@@ -504,7 +504,7 @@ class Part2Solution implements Solution<Part2TraceItem> {
     }
 
     private parseInput(input: string): number[][] {
-        return input.split("\n").map(line => line.split(" ").map(Number));
+        return input.trim().split("\n").map(line => line.split(" ").map(Number));
     }
 
     solve(): Trace<Part2TraceItem> {

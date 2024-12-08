@@ -178,6 +178,8 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
         item.classList.remove("bg-neutral-800");
         item.classList.add("bg-yellow-500");
 
+        this.memoryRow!.children[step.index].scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
@@ -616,6 +618,8 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         const item = this.memoryRow!.children[step.index];
         item.classList.remove("bg-neutral-800");
         item.classList.add("bg-yellow-500");
+
+        this.memoryRow!.children[step.index].scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
 
         return 1000;
     }
