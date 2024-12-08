@@ -67,6 +67,22 @@ function createColumnItems(container: HTMLUListElement, values: number[]): { ite
     });
 }
 
+function createRowCharItems(container: HTMLUListElement, values: string[]): { item: HTMLLIElement, text: HTMLSpanElement }[] {
+    container.innerHTML = ""; // Clear the container
+    return values.map(value => {
+        const item = createCharItem(value.toString());
+        item.item.classList.add(
+            "flex", // Enable flex layout
+            "items-center", // Center items vertically
+            "justify-center", // Center items horizontally
+            "p-2",            // Padding inside the container
+            "mx-2",           // Add margin to the item
+        );
+        container.appendChild(item.item);
+        return item;
+    });
+}
+
 function createRowItems(container: HTMLUListElement, values: number[]): { item: HTMLLIElement, text: HTMLSpanElement }[] {
     container.innerHTML = ""; // Clear the container
     return values.map(value => {
@@ -136,6 +152,7 @@ const utils = {
     createCharItem,
     createColumnItems,
     createRowItems,
+    createRowCharItems,
     // Animation
     highlightItemIn,
     highlightItemOut,
