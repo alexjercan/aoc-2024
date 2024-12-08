@@ -84,10 +84,11 @@ function createRowCharItems(container: HTMLUListElement, values: string[]): { it
     });
 }
 
-function createRowItems(container: HTMLUListElement, values: number[]): { item: HTMLLIElement, text: HTMLSpanElement }[] {
+function createRowItems(container: HTMLUListElement, values: number[] | string[]): { item: HTMLLIElement, text: HTMLSpanElement }[] {
     container.innerHTML = ""; // Clear the container
     return values.map(value => {
-        const item = createNumberItem(value.toString());
+        const valueString = value.toString();
+        const item = createNumberItem(valueString);
         item.item.classList.add("mx-2"); // Add margin to the item
         container.appendChild(item.item);
         return item;
