@@ -76,8 +76,9 @@ function createRowCharItems(container: HTMLUListElement, values: string[]): { it
             "flex", // Enable flex layout
             "items-center", // Center items vertically
             "justify-center", // Center items horizontally
-            "p-2",            // Padding inside the container
-            "mx-2",           // Add margin to the item
+            "min-w-8", // Fixed width
+            "aspect-square", // Square aspect ratio
+            "m-1", // Add margin to the item
         );
         container.appendChild(item.item);
         return item;
