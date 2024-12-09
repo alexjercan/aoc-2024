@@ -43,7 +43,11 @@
             pkgs.nodejs
             pkgs.pnpm
             pkgs.vlang
+            pkgs.rustc pkgs.cargo pkgs.gcc pkgs.rustfmt pkgs.clippy
+            pkgs.rust-analyzer
           ];
+
+          RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
 
           shellHook = ''
             export STACK_HOME=${slc-flake.packages.${system}.default}
@@ -161,6 +165,18 @@
 
         src = ./day08;
       };
+      packages.aoc2024-day09 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day09";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+            pkgs.rustc
+        ];
+
+        src = ./day09;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -172,6 +188,7 @@
           self.packages.${system}.aoc2024-day06
           self.packages.${system}.aoc2024-day07
           self.packages.${system}.aoc2024-day08
+          self.packages.${system}.aoc2024-day09
         ];
         text =
           /*
@@ -228,6 +245,9 @@
 
             echo -e "$IGreen""--- Day 8: Resonant Collinearity (OCaml) ---""$Color_Off"
             aoc2024-day08 < ./input/day08.input
+
+            echo -e "$IYellow""--- Day 9: Disk Fragmenter (Rust) ---""$Color_Off"
+            aoc2024-day09 < ./input/day09.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
