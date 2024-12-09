@@ -276,12 +276,18 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
         const to = step.to;
         this.tiles![from.row][from.col].text.textContent = "";
         this.tiles![to.row][to.col].text.textContent = step.facing;
+
+        this.tiles![from.row][from.col].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
     private turn(step: Part1TraceItemTurn): number {
         const pos = step.pos;
         this.tiles![pos.row][pos.col].text.textContent = step.facing;
+
+        this.tiles![pos.row][pos.col].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
@@ -289,6 +295,9 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
         const pos = step.pos;
         this.tiles![pos.row][pos.col].item.classList.remove("bg-neutral-800");
         this.tiles![pos.row][pos.col].item.classList.add("bg-blue-500");
+
+        this.tiles![pos.row][pos.col].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
@@ -305,11 +314,9 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "flex-col",        // Arrange children in a row
             "justify-between", // Space between the columns
             "items-center",    // Center items vertically
-            "space-y-4",       // Horizontal space between children
             "w-full",          // Full width
             "h-full",          // Full height
             "grow",            // Allow the container to grow
-            "py-4",            // Vertical padding
             "overflow-auto"    // Allow scrolling
         );
         this.solutionDiv.appendChild(puzzleDiv);
@@ -649,12 +656,18 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         const to = step.to;
         this.tiles![from.row][from.col].text.textContent = "";
         this.tiles![to.row][to.col].text.textContent = step.facing;
+
+        this.tiles![from.row][from.col].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
     private turn(step: Part1TraceItemTurn): number {
         const pos = step.pos;
         this.tiles![pos.row][pos.col].text.textContent = step.facing;
+
+        this.tiles![pos.row][pos.col].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
@@ -662,6 +675,9 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         const pos = step.pos;
         this.tiles![pos.row][pos.col].item.classList.remove("bg-neutral-800");
         this.tiles![pos.row][pos.col].item.classList.add("bg-blue-500");
+
+        this.tiles![pos.row][pos.col].item.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
         return 1000;
     }
 
@@ -685,11 +701,9 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
             "flex-col",        // Arrange children in a row
             "justify-between", // Space between the columns
             "items-center",    // Center items vertically
-            "space-y-4",       // Horizontal space between children
             "w-full",          // Full width
             "h-full",          // Full height
             "grow",            // Allow the container to grow
-            "py-4",            // Vertical padding
             "overflow-auto"    // Allow scrolling
         );
         this.solutionDiv.appendChild(puzzleDiv);
