@@ -45,6 +45,7 @@
             pkgs.vlang
             pkgs.rustc pkgs.cargo pkgs.gcc pkgs.rustfmt pkgs.clippy
             pkgs.rust-analyzer
+            pkgs.zig
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
@@ -177,6 +178,18 @@
 
         src = ./day09;
       };
+      packages.aoc2024-day10 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day10";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)" "HOME=$(TMP)"];
+
+        nativeBuildInputs = [
+            pkgs.zig
+        ];
+
+        src = ./day10;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -189,6 +202,7 @@
           self.packages.${system}.aoc2024-day07
           self.packages.${system}.aoc2024-day08
           self.packages.${system}.aoc2024-day09
+          self.packages.${system}.aoc2024-day10
         ];
         text =
           /*
@@ -248,6 +262,9 @@
 
             echo -e "$IYellow""--- Day 9: Disk Fragmenter (Rust) ---""$Color_Off"
             aoc2024-day09 < ./input/day09.input
+
+            echo -e "$IRed""--- Day 10: Hoof It (Zig) ---""$Color_Off"
+            aoc2024-day10 < ./input/day10.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
