@@ -466,13 +466,59 @@ class Part2Solution implements Solution<Part2TraceItem> {
         }
     }
 
+    solve1(): boolean[][] {
+        const trace: Trace<Part1TraceItem> = [];
+        const [map, guard] = this.parseInput(this.input);
+        trace.push({ kind: "input", map, guard: { pos: { row: guard.pos.row, col: guard.pos.col }, facing: guard.facing } });
+
+        const visited: boolean[][] = Array.from({ length: map.length }, () => Array(map[0].length).fill(false));
+        let totalSteps = 0;
+        while (true) {
+            const isVisited = visited[guard.pos.row][guard.pos.col];
+            if (!isVisited) {
+                totalSteps++;
+                trace.push({ kind: "total", steps: totalSteps });
+                visited[guard.pos.row][guard.pos.col] = true;
+            }
+            trace.push({ kind: "visit", pos: guard.pos });
+
+            const nextPos = this.nextPos(guard.pos, guard.facing);
+            const isBounded = this.isBounded(map, nextPos);
+            if (!isBounded) {
+                break;
+            }
+            trace.push({ kind: "check", pos: nextPos });
+
+            const isWall = this.isWall(map, nextPos);
+            trace.push({ kind: "check-result", pos: nextPos, result: !isWall });
+            trace.push({ kind: "check-out", pos: nextPos });
+
+            if (isWall) {
+                guard.facing = this.turnRight(guard.facing);
+                trace.push({ kind: "turn", pos: guard.pos, facing: guard.facing });
+                continue;
+            }
+
+            trace.push({ kind: "move-to", from: guard.pos, to: nextPos, facing: guard.facing });
+            guard.pos = nextPos;
+        }
+
+        return visited;
+    }
+
     solve(): Trace<Part2TraceItem> {
+        const visited1 = this.solve1();
+
         const trace: Trace<Part2TraceItem> = [];
         const [mapOG, guardOG] = this.parseInput(this.input);
 
         let totalCycles = 0;
         for (let row = 0; row < mapOG.length; row++) {
             for (let col = 0; col < mapOG[row].length; col++) {
+                if (!visited1[row][col] || mapOG[row][col] === Tile.WALL || (row === guardOG.pos.row && col === guardOG.pos.col)) {
+                    continue;
+                }
+
                 if (mapOG[row][col] === Tile.WALL) {
                     continue;
                 }
