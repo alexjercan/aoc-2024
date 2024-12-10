@@ -275,7 +275,7 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
                 operatorsRowList.appendChild(item.item);
 
                 if (j < step.equations[i].operators.length - 1) {
-                    const operatorItem = utils.createNumberItem("?", { color: "text-gray-400" });
+                    const operatorItem = utils.createNumberItem("?");
                     operatorItem.item.classList.add("mx-2"); // Add margin to the item
                     operatorsRowList.appendChild(operatorItem.item);
                     operationItems.push(operatorItem);
@@ -743,7 +743,7 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
                 operatorsRowList.appendChild(item.item);
 
                 if (j < step.equations[i].operators.length - 1) {
-                    const operatorItem = utils.createNumberItem("?", { color: "text-gray-400" });
+                    const operatorItem = utils.createNumberItem("?");
                     operatorItem.item.classList.add("mx-2"); // Add margin to the item
                     operatorsRowList.appendChild(operatorItem.item);
                     operationItems.push(operatorItem);
