@@ -11,16 +11,18 @@ interface PartAnimator<T> {
     step(step: T): number;
 }
 
-function createNumberItem(value: string): { item: HTMLLIElement, text: HTMLSpanElement } {
+function createNumberItem(value: string, options: { color?: string, ratio?: string } = {}): { item: HTMLLIElement, text: HTMLSpanElement } {
     const item = document.createElement("li");
     item.classList.add(
+        options.color ?? "text-white", // Text color
         "flex",            // Flex container
         "items-center",    // Center items vertically
         "justify-center",  // Center items horizontally
         "text-3xl",        // Large text size
         "font-extrabold",  // Extra bold text
         "min-w-16",            // Fixed width
-        "aspect-square",    // Square aspect ratio
+        "min-h-16",            // Fixed height
+        options.ratio ?? "aspect-square", // Square aspect ratio
         "rounded-xl",      // Rounded corners
         "shadow-2xl",      // Shadow
         "transition-all",  // Smooth transition
