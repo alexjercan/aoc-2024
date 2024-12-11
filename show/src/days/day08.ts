@@ -1,6 +1,8 @@
 import { PartAnimator, Solution, Trace, utils } from "./common";
 
-type Part1TraceItem = never;
+type Part1TraceItemInput = { kind: "input" };
+
+type Part1TraceItem = Part1TraceItemInput;
 
 class Part1Solution implements Solution<Part1TraceItem> {
     private input: string;
@@ -14,25 +16,60 @@ class Part1Solution implements Solution<Part1TraceItem> {
     }
 
     solve(): Trace<Part1TraceItem> {
-        return [];
+        const trace: Trace<Part1TraceItem> = [];
+
+        return trace;
     }
 }
 
 class Part1Animator implements PartAnimator<Part1TraceItem> {
+    private inputDiv: HTMLDivElement;
+    private solutionDiv: HTMLDivElement;
+
+    constructor(inputDiv: HTMLDivElement, solutionDiv: HTMLDivElement) {
+        this.inputDiv = inputDiv;
+        this.solutionDiv = solutionDiv;
+
+        this.reset();
+    }
+
     reset(): void {
+        this.inputDiv.classList.remove("hidden");
+        this.solutionDiv.classList.add("hidden");
+        this.solutionDiv.innerHTML = "";
     }
 
     begin(): void {
+        this.reset();
+
+        this.create();
+
+        this.inputDiv.classList.add("hidden");
+        this.solutionDiv.classList.remove("hidden");
     }
 
-    step(step: Part1TraceItem): number {
-        return 0;
+    step(step: Part2TraceItem): number {
+        switch (step.kind) {
+        case "input":
+            return this.createInput(step);
+        default:
+            throw new Error(`Unknown step kind: ${(step as Part1TraceItem).kind}`);
+        }
+    }
+
+    private createInput(step: Part1TraceItemInput): number {
+        return 1000;
+    }
+
+    private create(): void {
     }
 }
 
-type Part2TraceItem = never;
+type Part2TraceItemInput = { kind: "input" };
 
-class Part2Solution implements Solution<Part1TraceItem> {
+type Part2TraceItem = Part2TraceItemInput;
+
+class Part2Solution implements Solution<Part2TraceItem> {
     private input: string;
 
     setInput(input: string): void {
@@ -44,19 +81,52 @@ class Part2Solution implements Solution<Part1TraceItem> {
     }
 
     solve(): Trace<Part2TraceItem> {
-        return [];
+        const trace: Trace<Part2TraceItem> = [];
+
+        return trace;
     }
 }
 
-class Part2Animator implements PartAnimator<Part1TraceItem> {
+class Part2Animator implements PartAnimator<Part2TraceItem> {
+    private inputDiv: HTMLDivElement;
+    private solutionDiv: HTMLDivElement;
+
+    constructor(inputDiv: HTMLDivElement, solutionDiv: HTMLDivElement) {
+        this.inputDiv = inputDiv;
+        this.solutionDiv = solutionDiv;
+
+        this.reset();
+    }
+
     reset(): void {
+        this.inputDiv.classList.remove("hidden");
+        this.solutionDiv.classList.add("hidden");
+        this.solutionDiv.innerHTML = "";
     }
 
     begin(): void {
+        this.reset();
+
+        this.create();
+
+        this.inputDiv.classList.add("hidden");
+        this.solutionDiv.classList.remove("hidden");
     }
 
     step(step: Part2TraceItem): number {
-        return 0;
+        switch (step.kind) {
+        case "input":
+            return this.createInput(step);
+        default:
+            throw new Error(`Unknown step kind: ${(step as Part2TraceItem).kind}`);
+        }
+    }
+
+    private createInput(step: Part2TraceItemInput): number {
+        return 1000;
+    }
+
+    private create(): void {
     }
 }
 

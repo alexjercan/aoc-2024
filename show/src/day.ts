@@ -101,6 +101,10 @@ class Animator<T> {
             this.part.begin();
         }
 
+        if (this.state.stepIndex >= this.state.trace.length) {
+            return;
+        }
+
         this.abortController.abort();
         this.part.step(this.state.trace[this.state.stepIndex]);
         this.state.stepIndex++;
