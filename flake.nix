@@ -46,6 +46,7 @@
             pkgs.rustc pkgs.cargo pkgs.gcc pkgs.rustfmt pkgs.clippy
             pkgs.rust-analyzer
             pkgs.zig
+            pkgs.c3c pkgs.c3-lsp
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
@@ -190,6 +191,18 @@
 
         src = ./day10;
       };
+      packages.aoc2024-day11 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day11";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+            pkgs.c3c
+        ];
+
+        src = ./day11;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -203,6 +216,7 @@
           self.packages.${system}.aoc2024-day08
           self.packages.${system}.aoc2024-day09
           self.packages.${system}.aoc2024-day10
+          self.packages.${system}.aoc2024-day11
         ];
         text =
           /*
@@ -265,6 +279,9 @@
 
             echo -e "$IRed""--- Day 10: Hoof It (Zig) ---""$Color_Off"
             aoc2024-day10 < ./input/day10.input
+
+            echo -e "$IGreen""--- Day 11: Plutonian Pebbles (C3) ---""$Color_Off"
+            aoc2024-day11 < ./input/day11.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
