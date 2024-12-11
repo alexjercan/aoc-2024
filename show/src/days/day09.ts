@@ -330,7 +330,8 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
             "justify-start",   // Start items horizontally
             "items-center",    // Center items vertically
             "flex-wrap",       // Wrap items when they overflow
-            "mt-4"             // Margin top
+            "mt-4",             // Margin top
+            "overflow-y-auto"  // Allow vertical scrolling
         );
         puzzleDiv.appendChild(this.memoryRow);
 
@@ -603,14 +604,13 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         puzzleDiv.classList.add(
             "flex",            // Flex container
             "flex-col",        // Arrange children in a row
-            "justify-center",   // Start items horizontally
+            "justify-start",   // Start items horizontally
             "items-center",    // Center items vertically
             "space-y-4",       // Horizontal space between children
             "w-full",          // Full width
             "h-full",          // Full height
             "grow",            // Allow the container to grow
             "py-4",            // Vertical padding
-            "overflow-y-auto"  // Allow vertical scrolling
         );
         this.solutionDiv.appendChild(puzzleDiv);
 
@@ -722,7 +722,8 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
             "justify-start",   // Start items horizontally
             "items-center",    // Center items vertically
             "flex-wrap",       // Wrap items when they overflow
-            "mt-4"             // Margin top
+            "mt-4",             // Margin top
+            "overflow-y-auto"  // Allow vertical scrolling
         );
         puzzleDiv.appendChild(this.memoryRow);
 
