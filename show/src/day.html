@@ -9,7 +9,7 @@
         <script src="day.js"></script>
         <script src="<%= dayModule %>.js"></script>
 
-        <header class="flex flex-col items-center p-6 sticky top-0 bg-neutral-900 z-10">
+        <header class="flex flex-col items-center p-6 sticky top-0 bg-neutral-900 z-10 h-[10vh]">
             <div class="flex flex-row w-full items-center">
                 <div class="flex flex-row grow items-start">
                     <h1 class="text-3xl font-bold text-green-700">
@@ -63,8 +63,8 @@
             </div>
         </header>
 
-        <main class="h-full w-[50vw] mx-auto p-6">
-            <section class="flex flex-col bg-neutral-800 p-6 rounded-lg shadow-lg mb-4 h-[75vh]">
+        <main class="h-full w-[66vw] mx-auto p-6">
+            <section class="flex flex-col items-start bg-neutral-800 p-6 rounded-lg shadow-lg mb-4 h-[90vh]">
                 <h2 class="text-xl text-green-400 mb-4">Part1 Solution</h2>
                 <div id="part1" class="flex flex-col mt-8 w-full grow">
                     <div id="part1-input" class=" flex flex-col items-center space-y-4 w-full grow h-[50vh]">
@@ -76,7 +76,7 @@
                     <div id="part1-solution" class="hidden flex flex-col items-center space-y-4 w-full grow h-[50vh]">
                         <!-- Solution content goes here -->
                     </div>
-                    <div id="part1-control" class="flex flex-col items-center space-y-4 w-full grow mt-auto">
+                    <div id="part1-control" class="flex flex-col items-center space-y-4 mt-auto">
                         <div class="flex space-x-4 mt-4">
                             <button id="part1-solve" class="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all w-32">Solve</button>
                             <button id="part1-step" class="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-all w-32">Step</button>
@@ -86,7 +86,7 @@
                 </div>
             </section>
 
-            <section class="flex flex-col bg-neutral-800 p-6 rounded-lg shadow-lg mb-4 h-[75vh]">
+            <section class="flex flex-col bg-neutral-800 p-6 rounded-lg shadow-lg mb-4 h-[90vh]">
                 <h2 class="text-xl text-green-400 mb-4">Part2 Solution</h2>
                 <div id="part2" class="flex flex-col mt-8 w-full grow">
                     <div id="part2-input" class=" flex flex-col items-center space-y-4 w-full grow h-[50vh]">
@@ -98,7 +98,7 @@
                     <div id="part2-solution" class="hidden flex flex-col items-center space-y-4 w-full grow h-[50vh]">
                         <!-- Solution content goes here -->
                     </div>
-                    <div id="part2-control" class="flex flex-col items-center space-y-4 w-full grow mt-auto">
+                    <div id="part2-control" class="flex flex-col items-center space-y-4 mt-auto">
                         <div class="flex space-x-4 mt-4">
                             <button id="part2-solve" class="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all w-32">Solve</button>
                             <button id="part2-step" class="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-all w-32">Step</button>
