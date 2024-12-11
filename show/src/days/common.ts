@@ -151,6 +151,16 @@ function createOrderedList(items: string[]): HTMLOListElement {
     return list;
 }
 
+function randomBgColor(): string {
+    const colors = [
+        "bg-red-500",
+        "bg-yellow-500",
+        "bg-green-500",
+        "bg-blue-500",
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
 const utils = {
     // Elements
     createNumberItem,
@@ -164,7 +174,9 @@ const utils = {
     highlightItemPopOut,
     // Text
     createParagraph,
-    createOrderedList
+    createOrderedList,
+    // Colors
+    randomBgColor,
 };
 
 export { Trace, Solution, PartAnimator, utils };
