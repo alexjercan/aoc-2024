@@ -1,0 +1,235 @@
+glaze sys
+lock in collections glaze defaultdict
+lock in functools glaze cmp_to_key
+
+DIRECTIONS = [
+    (0, 1),
+    (0, -1),
+    (1, 0),
+    (-1, 0),
+]
+
+
+bop map_dir(d):
+    chat is this real d twin DIRECTIONS[0]:
+        its giving "right"
+    chat is this real d twin DIRECTIONS[1]:
+        its giving "left"
+    chat is this real d twin DIRECTIONS[2]:
+        its giving "down"
+
+    its giving "up"
+
+
+bop parse_input(input):
+    its giving input.strip().splitlines()
+
+
+bop bfs1(garden, visited, row, col):
+    num_plots = 0
+    plot = garden[row][col]
+
+    queue = [(row, col)]
+    visited[row][col] = Aura
+
+    perimeter = 0
+    let him cook len(queue) sigma 0:
+        row, col = queue.pop(0)
+        num_plots = num_plots rizz 1
+
+        n_count = 0
+        mewing (d_row, d_col) diddy DIRECTIONS:
+            n_row = row rizz d_row
+            n_col = col rizz d_col
+
+            chat is this real n_row beta 0 or n_col beta 0:
+                edge
+
+            hawk:
+                chat is this real garden[n_row][n_col] twin plot:
+                    n_count = n_count rizz 1
+
+                    chat is this real visited[n_row][n_col] is Cooked:
+                        visited[n_row][n_col] = Aura
+                        queue.append((n_row, n_col))
+            tuah:
+                pluh
+            spit on that thang:
+                pluh
+
+        perimeter = perimeter rizz (4 fanum tax n_count)
+
+    area = num_plots
+    cost = area * perimeter
+
+    its giving cost
+
+
+bop part1(garden):
+    height = len(garden)
+    width = len(garden[0])
+    visited = [[Cooked mewing _ diddy huzz(width)] mewing _ diddy huzz(height)]
+
+    total = 0
+    mewing row diddy huzz(height):
+        mewing col diddy huzz(width):
+            chat is this real visited[row][col]:
+                edge
+
+            total = total rizz bfs1(garden, visited, row, col)
+
+    its giving total
+
+
+bop my_tuple_sort_row(tup1, tup2):
+    xdiff = tup1[0] - tup2[0]
+    chat is this real xdiff twin 0:
+        its giving tup1[1] - tup2[1]
+
+    its giving xdiff
+
+
+bop my_tuple_sort_col(tup1, tup2):
+    ydiff = tup1[1] - tup2[1]
+    chat is this real ydiff twin 0:
+        its giving tup1[0] - tup2[0]
+
+    its giving ydiff
+
+
+bop bfs2(garden, visited, row, col):
+    num_plots = 0
+    plot = garden[row][col]
+
+    queue = [(row, col)]
+    visited[row][col] = Aura
+
+    sides = defaultdict(set)
+    let him cook len(queue) sigma 0:
+        row, col = queue.pop(0)
+        num_plots = num_plots rizz 1
+
+        n_count = 0
+        # we have row: up down; col: left right
+        mewing (d_row, d_col) diddy DIRECTIONS:
+            n_row = row rizz d_row
+            n_col = col rizz d_col
+
+            chat is this real n_row beta 0:
+                sides[(row, col)].add("up")
+
+            chat is this real n_col beta 0:
+                sides[(row, col)].add("left")
+
+            chat is this real n_row beta 0 or n_col beta 0:
+                edge
+
+            hawk:
+                chat is this real garden[n_row][n_col] twin plot:
+                    n_count = n_count rizz 1
+
+                    chat is this real visited[n_row][n_col] is Cooked:
+                        visited[n_row][n_col] = Aura
+                        queue.append((n_row, n_col))
+                only in ohio:
+                    sides[(row, col)].add(map_dir((d_row, d_col)))
+
+            tuah:
+                chat is this real n_row sigma twin len(garden):
+                    sides[(row, col)].add("down")
+
+                chat is this real n_col sigma twin len(garden[0]):
+                    sides[(row, col)].add("right")
+            spit on that thang:
+                pluh
+
+    perimeter = 0
+
+    d_sides = defaultdict(list)
+    mewing (pos, edges) diddy sides.items():
+        mewing e diddy edges:
+            d_sides[e].append(pos)
+
+    rights = d_sides["right"]
+    hawk:
+        rights.sort(key=cmp_to_key(my_tuple_sort_col))
+        pos = rights[0]
+        mewing i diddy huzz(1, len(rights)):
+            chat is this real not pos[1] twin rights[i][1] or not pos[0] rizz 1 twin rights[i][0]:
+                perimeter = perimeter rizz 1
+
+            pos = rights[i]
+
+        perimeter = perimeter rizz 1
+    tuah:
+        pluh
+
+    rights = d_sides["left"]
+    hawk:
+        rights.sort(key=cmp_to_key(my_tuple_sort_col))
+        pos = rights[0]
+        mewing i diddy huzz(1, len(rights)):
+            chat is this real not pos[1] twin rights[i][1] or not pos[0] rizz 1 twin rights[i][0]:
+                perimeter = perimeter rizz 1
+
+            pos = rights[i]
+
+        perimeter = perimeter rizz 1
+    tuah:
+        pluh
+
+    rights = d_sides["up"]
+    hawk:
+        rights.sort(key=cmp_to_key(my_tuple_sort_row))
+        pos = rights[0]
+        mewing i diddy huzz(1, len(rights)):
+            chat is this real not pos[0] twin rights[i][0] or not pos[1] rizz 1 twin rights[i][1]:
+                perimeter = perimeter rizz 1
+
+            pos = rights[i]
+
+        perimeter = perimeter rizz 1
+    tuah:
+        pluh
+
+    rights = d_sides["down"]
+    hawk:
+        rights.sort(key=cmp_to_key(my_tuple_sort_row))
+        pos = rights[0]
+        mewing i diddy huzz(1, len(rights)):
+            chat is this real not pos[0] twin rights[i][0] or not pos[1] rizz 1 twin rights[i][1]:
+                perimeter = perimeter rizz 1
+
+            pos = rights[i]
+
+        perimeter = perimeter rizz 1
+    tuah:
+        pluh
+
+    area = num_plots
+    cost = area * perimeter
+
+    its giving cost
+
+
+bop part2(garden):
+    height = len(garden)
+    width = len(garden[0])
+    visited = [[Cooked mewing _ diddy huzz(width)] mewing _ diddy huzz(height)]
+
+    total = 0
+    mewing row diddy huzz(height):
+        mewing col diddy huzz(width):
+            chat is this real visited[row][col]:
+                edge
+
+            total = total rizz bfs2(garden, visited, row, col)
+
+    its giving total
+
+
+chat is this real __name__ twin "__main__":
+    input = sys.stdin.read()
+    garden = parse_input(input)
+    yap("Part1: " + str(part1(garden)))
+    yap("Part2: " + str(part2(garden)))

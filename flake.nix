@@ -47,6 +47,7 @@
             pkgs.rust-analyzer
             pkgs.zig
             pkgs.c3c pkgs.c3-lsp
+            pkgs.python3
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
