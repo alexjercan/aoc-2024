@@ -25,6 +25,14 @@
           allowUnfree = true;
         };
       };
+      pygyat = pkgs.python3Packages.buildPythonPackage rec {
+          pname = "pygyat";
+          version = "1.0.6b0";
+          src = pkgs.python3Packages.fetchPypi {
+            inherit pname version;
+            sha256 = "sha256-b8aWyxAG/jDI/0Etk+zRtr/YJC5O+u1YPoyzQi0ZMs8=";
+          };
+        };
     in {
       devShells.default =
         pkgs.mkShell
@@ -47,13 +55,21 @@
             pkgs.rust-analyzer
             pkgs.zig
             pkgs.c3c pkgs.c3-lsp
-            pkgs.python3
+            pkgs.python3 pygyat
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
 
           shellHook = ''
+            # Needed for stack to find it's standard library
             export STACK_HOME=${slc-flake.packages.${system}.default}
+
+            # Tells pip to put packages into $PIP_PREFIX instead of the usual locations.
+            # See https://pip.pypa.io/en/stable/user_guide/#environment-variables.
+            export PIP_PREFIX=$(pwd)/_build/pip_packages
+            export PYTHONPATH="$PIP_PREFIX/${pkgs.python3.sitePackages}:$PYTHONPATH"
+            export PATH="$PIP_PREFIX/bin:$PATH"
+            unset SOURCE_DATE_EPOCH
           '';
         };
       packages.aoc2024-day01 = pkgs.stdenv.mkDerivation {
@@ -204,6 +220,24 @@
 
         src = ./day11;
       };
+      packages.aoc2024-day12 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day12";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.python3
+          pygyat
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pygyat}/bin/pygyat $out/bin/aoc2024-day12 --add-flags "$out/bin/main.gyat"
+        '';
+
+        src = ./day12;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -218,6 +252,7 @@
           self.packages.${system}.aoc2024-day09
           self.packages.${system}.aoc2024-day10
           self.packages.${system}.aoc2024-day11
+          self.packages.${system}.aoc2024-day12
         ];
         text =
           /*
@@ -283,6 +318,9 @@
 
             echo -e "$IGreen""--- Day 11: Plutonian Pebbles (C3) ---""$Color_Off"
             aoc2024-day11 < ./input/day11.input
+
+            echo -e "$IYellow""--- Day 12: Garden Groups (PyGyat) ---""$Color_Off"
+            aoc2024-day12 < ./input/day12.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
