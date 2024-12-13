@@ -238,6 +238,18 @@
 
         src = ./day12;
       };
+      packages.aoc2024-day13 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day13";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.gcc
+        ];
+
+        src = ./day13;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -253,6 +265,7 @@
           self.packages.${system}.aoc2024-day10
           self.packages.${system}.aoc2024-day11
           self.packages.${system}.aoc2024-day12
+          self.packages.${system}.aoc2024-day13
         ];
         text =
           /*
@@ -321,6 +334,9 @@
 
             echo -e "$IYellow""--- Day 12: Garden Groups (PyGyat) ---""$Color_Off"
             aoc2024-day12 < ./input/day12.input
+
+            echo -e "$IRed""--- Day 13: Claw Contraption (C++) ---""$Color_Off"
+            aoc2024-day13 < ./input/day13.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
