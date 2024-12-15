@@ -57,6 +57,7 @@
             pkgs.c3c pkgs.c3-lsp
             pkgs.python3 pygyat
             pkgs.elixir pkgs.elixir-ls
+            pkgs.clang
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
@@ -268,6 +269,18 @@
 
         src = ./day14;
       };
+      packages.aoc2024-day15 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day15";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.clang
+        ];
+
+        src = ./day15;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -285,6 +298,7 @@
           self.packages.${system}.aoc2024-day12
           self.packages.${system}.aoc2024-day13
           self.packages.${system}.aoc2024-day14
+          self.packages.${system}.aoc2024-day15
         ];
         text =
           /*
@@ -359,6 +373,9 @@
 
             echo -e "$IGreen""--- Day 14: Restroom Redoubt (Elixir) ---""$Color_Off"
             aoc2024-day14 < ./input/day14.input
+
+            echo -e "$IYellow""--- Day 15: Warehouse Woes (C) ---""$Color_Off"
+            aoc2024-day15 < ./input/day15.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
