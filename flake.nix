@@ -281,6 +281,18 @@
 
         src = ./day15;
       };
+      packages.aoc2024-day15-game = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day15-game";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.clang
+        ];
+
+        src = ./day15;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
