@@ -668,6 +668,41 @@ class Part2Solution implements Solution<Part2TraceItem> {
 
         return trace;
     }
+
+    stepInitial(): Part1TraceItemInput {
+        const [boxes, walls, player, _, width, height] = this.parseInput(this.input);
+        return { kind: "input", boxes, walls, player, moves: [], width, height };
+    }
+
+    stepSolve(move: Move, state: Part1TraceItemInput): [Part1TraceItemInput, number] {
+        const newPlayer = { ...state.player };
+        const newBoxes = state.boxes.map((box) => ({ ...box }));
+        const newWalls = state.walls.map((wall) => ({ ...wall }));
+
+        const fromTo = this.movePlayer(newPlayer, move, newBoxes, newWalls);
+
+        if (fromTo.length > 0) {
+            newPlayer.row = fromTo[fromTo.length - 1][1].row;
+            newPlayer.col = fromTo[fromTo.length - 1][1].col;
+
+            const boxIndices = [];
+            for (let i = 0; i < fromTo.length - 1; i++) {
+                const [from, _] = fromTo[i];
+                const boxIndex = newBoxes.findIndex((box) => box.row === from.row && box.col === from.col);
+                boxIndices.push(boxIndex);
+            }
+
+            for (let i = 0; i < boxIndices.length; i++) {
+                const boxIndex = boxIndices[i];
+                newBoxes[boxIndex].row = fromTo[i][1].row;
+                newBoxes[boxIndex].col = fromTo[i][1].col;
+            }
+
+            return [{ kind: "input", boxes: newBoxes, walls: newWalls, player: newPlayer, moves: [...state.moves, move], width: state.width, height: state.height }, this.computeTotal(newBoxes)];
+        }
+
+        return [state, this.computeTotal(newBoxes)];
+    }
 }
 
 class Part2Animator implements PartAnimator<Part2TraceItem> {
@@ -680,11 +715,16 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
     private movesRow?: HTMLUListElement;
     private moves?: { item: HTMLLIElement, text: HTMLSpanElement }[];
 
+    private solution?: Part2Solution;
+    private state?: Part1TraceItemInput;
+
     constructor(inputDiv: HTMLDivElement, solutionDiv: HTMLDivElement) {
         this.inputDiv = inputDiv;
         this.solutionDiv = solutionDiv;
 
         this.reset();
+
+        this.createPlayButton();
     }
 
     reset(): void {
@@ -697,6 +737,9 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         this.tiles = undefined;
         this.movesRow = undefined;
         this.moves = undefined;
+
+        this.solution = undefined;
+        this.state = undefined;
     }
 
     begin(): void {
@@ -721,6 +764,101 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         default:
             throw new Error(`Unknown step kind: ${(step as Part2TraceItem).kind}`);
         }
+    }
+
+    private createPlayButton(): void {
+        const controlDiv = document.getElementById("part2-control") as HTMLDivElement;
+        const containerDiv = controlDiv.children[0] as HTMLDivElement;
+
+        const playButton = document.createElement("button");
+        playButton.textContent = "Play";
+        playButton.classList.add(
+            "p-2",             // Padding
+            "bg-green-500",    // Green background
+            "text-white",      // White text
+            "rounded",         // Rounded corners
+            "hover:bg-green-600", // Darken the background on hover
+            "transition-all",  // Smooth transition
+            "w-32",            // Fixed width
+            "disabled:opacity-50", // Lower opacity when disabled
+            "disabled:cursor-not-allowed", // Disable pointer events when disabled
+        );
+        containerDiv.appendChild(playButton);
+        const solveButton = document.getElementById("part2-solve") as HTMLButtonElement;
+        solveButton.addEventListener("click", () => {
+            playButton.disabled = true;
+        });
+        solveButton.classList.add(
+            "disabled:opacity-50", // Lower opacity when disabled
+            "disabled:cursor-not-allowed", // Disable pointer events when disabled
+        );
+
+        const stepButton = document.getElementById("part2-step") as HTMLButtonElement;
+        stepButton.addEventListener("click", () => {
+            playButton.disabled = true;
+        });
+        stepButton.classList.add(
+            "disabled:opacity-50", // Lower opacity when disabled
+            "disabled:cursor-not-allowed", // Disable pointer events when disabled
+        );
+
+        const resetButton = document.getElementById("part2-reset") as HTMLButtonElement;
+        resetButton.addEventListener("click", () => {
+            solveButton.disabled = false;
+            stepButton.disabled = false;
+            playButton.disabled = false;
+        });
+
+        const textarea = document.getElementById("part2-textarea") as HTMLTextAreaElement;
+        playButton.onclick = () => {
+            solveButton.disabled = true;
+            stepButton.disabled = true;
+
+            this.reset();
+
+            this.solution = new Part2Solution(textarea.value);
+            this.state = this.solution.stepInitial();
+
+            this.create();
+
+            this.step(this.state);
+
+            this.inputDiv.classList.add("hidden");
+            this.solutionDiv.classList.remove("hidden");
+        };
+
+        // on key down
+        document.addEventListener("keydown", (event) => {
+            if (this.solution === undefined || this.state === undefined) {
+                return;
+            }
+
+            let move: Move | null = null;
+            switch (event.key) {
+            case "w":
+                move = Move.Up;
+                break;
+            case "s":
+                move = Move.Down;
+                break;
+            case "a":
+                move = Move.Left;
+                break;
+            case "d":
+                move = Move.Right;
+                break;
+            }
+
+            if (move === null) {
+                return;
+            }
+
+            const [newState, total] = this.solution!.stepSolve(move!, this.state!);
+            this.state = newState;
+
+            this.step(this.state);
+            this.step({ kind: "total", total });
+        });
     }
 
     private createInput(step: Part1TraceItemInput): number {
