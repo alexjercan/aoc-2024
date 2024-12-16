@@ -293,6 +293,23 @@
 
         src = ./day15;
       };
+      packages.aoc2024-day16 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day16";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.python3
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.python3}/bin/python3 $out/bin/aoc2024-day16 --add-flags "$out/bin/main.py"
+        '';
+
+        src = ./day16;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -311,6 +328,7 @@
           self.packages.${system}.aoc2024-day13
           self.packages.${system}.aoc2024-day14
           self.packages.${system}.aoc2024-day15
+          self.packages.${system}.aoc2024-day16
         ];
         text =
           /*
@@ -388,6 +406,9 @@
 
             echo -e "$IYellow""--- Day 15: Warehouse Woes (C) ---""$Color_Off"
             aoc2024-day15 < ./input/day15.input
+
+            echo -e "$IRed""--- Day 16: Reindeer Maze (Python) ---""$Color_Off"
+            aoc2024-day16 < ./input/day16.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
