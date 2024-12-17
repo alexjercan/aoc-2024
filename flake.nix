@@ -58,6 +58,7 @@
             pkgs.python3 pygyat
             pkgs.elixir pkgs.elixir-ls
             pkgs.clang
+            pkgs.lua54Packages.lua
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
@@ -310,6 +311,23 @@
 
         src = ./day16;
       };
+      packages.aoc2024-day17 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day17";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.lua54Packages.lua
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.lua54Packages.lua}/bin/lua $out/bin/aoc2024-day17 --add-flags "$out/bin/main.lua"
+        '';
+
+        src = ./day17;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -329,6 +347,7 @@
           self.packages.${system}.aoc2024-day14
           self.packages.${system}.aoc2024-day15
           self.packages.${system}.aoc2024-day16
+          self.packages.${system}.aoc2024-day17
         ];
         text =
           /*
@@ -409,6 +428,9 @@
 
             echo -e "$IRed""--- Day 16: Reindeer Maze (Python) ---""$Color_Off"
             aoc2024-day16 < ./input/day16.input
+
+            echo -e "$IGreen""--- Day 17: Chronospatial Computer (Lua) ---""$Color_Off"
+            aoc2024-day17 < ./input/day17.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
