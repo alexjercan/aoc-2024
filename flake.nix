@@ -59,6 +59,7 @@
             pkgs.elixir pkgs.elixir-ls
             pkgs.clang
             pkgs.lua54Packages.lua
+            pkgs.ruby
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
