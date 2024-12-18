@@ -229,7 +229,7 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
         item.item.classList.add("bg-yellow-500");
         item.text.textContent = running.toString();
 
-        return 100;
+        return 1000;
     }
 
     private answer(step: Part1TraceItemAnswer): number {
@@ -319,12 +319,13 @@ class Part1Animator implements PartAnimator<Part1TraceItem> {
 }
 
 type Part2TraceItemInput = { kind: "input", points: [number, number][], width: number, height: number };
-type Part2TraceItemBlock = { kind: "block", block: [number, number] };
+type Part2TraceItemBlock = { kind: "block", block: [number, number][] };
+type Part2TraceItemBlockOut = { kind: "block-out", block: [number, number][] };
 type Part2TraceItemPath = { kind: "path", path: [number, number][] };
 type Part2TraceItemPathOut = { kind: "path-out", path: [number, number][] };
 type Part2TraceItemAnswer = { kind: "answer", length: string };
 
-type Part2TraceItem = Part2TraceItemInput | Part2TraceItemBlock | Part2TraceItemPath | Part2TraceItemPathOut | Part2TraceItemAnswer;
+type Part2TraceItem = Part2TraceItemInput | Part2TraceItemBlock | Part2TraceItemBlockOut | Part2TraceItemPath | Part2TraceItemPathOut | Part2TraceItemAnswer;
 
 class Part2Solution implements Solution<Part2TraceItem> {
     private input: string;
@@ -375,27 +376,73 @@ class Part2Solution implements Solution<Part2TraceItem> {
     }
 
     solve(): Trace<Part2TraceItem> {
-        const trace: Trace<Part2TraceItem> = [];
+        /*
+  counter = testacles.length / 2
+  half = counter
+  while true do
+    newObstacles = obstacles.map(&:clone)
+    newObstacles.push(*testacles.take(counter))
 
+    path = astar(newObstacles, start, target, width, height)
+    if path != nil then
+      newObstacles = obstacles.map(&:clone)
+      newObstacles.push(*testacles.take(counter + 1))
+      if astar(newObstacles, start, target, width, height) == nil then
+        return testacles[counter]
+      end
+
+      counter = counter + half / 2
+      half = half / 2
+    else
+      counter = counter - half / 2
+      half = half / 2
+    end
+  end
+
+  return nil
+  */
+        const trace: Trace<Part2TraceItem> = [];
         const [points, width, height] = this.parseInput(this.input);
         const numPoints = points.length < 1024 ? 12 : 1024;
-        const choosePoints = points.slice(0, numPoints);
-        const blockPoints = points.slice(numPoints);
-        trace.push({ kind: "input", points: choosePoints, width, height });
 
-        for (const block of blockPoints) {
-            trace.push({ kind: "block", block });
+        const obstacles = points.slice(0, numPoints);
+        const testacles = points.slice(numPoints, points.length);
+        trace.push({ kind: "input", points: obstacles, width, height });
 
-            choosePoints.push(block);
-            const path = this.astar(choosePoints, width, height);
+        let counter = Math.floor(testacles.length / 2);
+        let half = counter;
+        while (true) {
+            const newObstacles = obstacles.slice();
+            newObstacles.push(...testacles.slice(0, counter));
 
+            const ogTestacles = testacles.slice(0, counter);
+            trace.push({ kind: "block", block: ogTestacles });
+
+            const path = this.astar(newObstacles, width, height);
             if (path.length > 0) {
+                const newObstacles2 = obstacles.slice();
+                newObstacles2.push(...testacles.slice(0, counter + 1));
+                trace.push({ kind: "block", block: testacles.slice(counter, counter + 1) });
+
+                if (this.astar(newObstacles2, width, height).length === 0) {
+                    trace.push({ kind: "answer", length: `${points[numPoints + counter][0]},${points[numPoints + counter][1]}` });
+                    trace.push({ kind: "block-out", block: [...ogTestacles, points[numPoints + counter] ] });
+                    break;
+                }
+
                 trace.push({ kind: "path", path });
                 trace.push({ kind: "path-out", path });
+
+                trace.push({ kind: "block-out", block: testacles.slice(counter, counter + 1) });
+
+                counter = counter + Math.floor(half / 2);
+                half = Math.floor(half / 2);
             } else {
-                trace.push({ kind: "answer", length: `${block[0]},${block[1]}` });
-                break;
+                counter = counter - Math.floor(half / 2);
+                half = Math.floor(half / 2);
             }
+
+            trace.push({ kind: "block-out", block: ogTestacles });
         }
 
         return trace;
@@ -464,6 +511,10 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
     private inputDiv: HTMLDivElement;
     private solutionDiv: HTMLDivElement;
 
+    private answerNumber?: HTMLSpanElement;
+    private mapColumn?: HTMLUListElement;
+    private tiles?: { item: HTMLLIElement, text: HTMLSpanElement }[][];
+
     constructor(inputDiv: HTMLDivElement, solutionDiv: HTMLDivElement) {
         this.inputDiv = inputDiv;
         this.solutionDiv = solutionDiv;
@@ -475,6 +526,10 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         this.inputDiv.classList.remove("hidden");
         this.solutionDiv.classList.add("hidden");
         this.solutionDiv.innerHTML = "";
+
+        this.answerNumber = undefined;
+        this.mapColumn = undefined;
+        this.tiles = undefined;
     }
 
     begin(): void {
@@ -490,16 +545,194 @@ class Part2Animator implements PartAnimator<Part2TraceItem> {
         switch (step.kind) {
         case "input":
             return this.createInput(step);
+        case "block":
+            return this.block(step);
+        case "block-out":
+            return this.blockOut(step);
+        case "path":
+            return this.path(step);
+        case "path-out":
+            return this.pathOut(step);
+        case "answer":
+            return this.answer(step);
         default:
             throw new Error(`Unknown step kind: ${(step as Part2TraceItem).kind}`);
         }
     }
 
     private createInput(step: Part2TraceItemInput): number {
+        const points = step.points;
+        const width = step.width;
+        const height = step.height;
+
+        for (let row = 0; row < height; row++) {
+            const mapRow = document.createElement("li");
+            mapRow.classList.add(
+                "flex",            // Flex container
+                "flex-row",        // Arrange children in a row
+                "justify-center",  // Center items horizontally
+                "items-center",    // Center items vertically
+                "rounded-lg",      // Rounded corners
+            );
+            this.mapColumn!.appendChild(mapRow);
+
+            const mapRowList = document.createElement("ul");
+            mapRowList.classList.add(
+                "flex",            // Flex container
+                "flex-row",        // Arrange children in a row
+                "justify-center",  // Center items horizontally
+                "items-center",    // Center items vertically
+            );
+            mapRow.appendChild(mapRowList);
+
+            const rowItems = [];
+            for (let col = 0; col < width; col++) {
+                const value = points.some(([x, y]) => x === col && y === row) ? "#" : ".";
+
+                const element = utils.createCharItem(value);
+                element.item.classList.add(
+                    "flex",
+                    "flex-row",
+                    "justify-center", // Center items vertically
+                    "w-8", // Fixed width
+                    "h-8", // Fixed height
+                    "m-1" // Add margin to the item
+                );
+                mapRowList.appendChild(element.item);
+                rowItems.push(element);
+            }
+            this.tiles!.push(rowItems);
+        }
+
+        return 1000;
+    }
+
+    private block(step: Part2TraceItemBlock): number {
+        for (const [x, y] of step.block) {
+            const item = this.tiles![y][x];
+            item.item.classList.remove("bg-neutral-800");
+            item.item.classList.add("bg-red-500");
+            item.text.textContent = "#";
+        }
+
+        return 1000;
+    }
+
+    private blockOut(step: Part2TraceItemBlockOut): number {
+        for (const [x, y] of step.block) {
+            const item = this.tiles![y][x];
+            item.item.classList.remove("bg-red-500");
+            item.item.classList.add("bg-neutral-800");
+            item.text.textContent = ".";
+        }
+
+        return 1000;
+    }
+
+    private path(step: Part2TraceItemPath): number {
+        for (let i = 0; i < step.path.length; i++) {
+            const [x, y] = step.path[i];
+            const item = this.tiles![y][x];
+            item.item.classList.remove("bg-neutral-800");
+            item.item.classList.add("bg-yellow-500");
+        }
+
+        return 1000;
+    }
+
+    private pathOut(step: Part2TraceItemPathOut): number {
+        for (const [x, y] of step.path) {
+            const item = this.tiles![y][x];
+            item.item.classList.remove("bg-yellow-500");
+            item.item.classList.add("bg-neutral-800");
+        }
+
+        return 1000;
+    }
+
+    private answer(step: Part2TraceItemAnswer): number {
+        this.answerNumber!.textContent = step.length.toString();
+
         return 1000;
     }
 
     private create(): void {
+        // Create the main puzzle container
+        const puzzleDiv = document.createElement("div");
+        puzzleDiv.classList.add(
+            "flex",            // Flex container
+            "flex-col",        // Arrange children in a row
+            "justify-start", // Space between the columns
+            "items-center",    // Center items vertically
+            "w-full",          // Full width
+            "h-full",          // Full height
+            "grow",            // Allow the container to grow
+            "overflow-auto"    // Allow scrolling
+        );
+        this.solutionDiv.appendChild(puzzleDiv);
+
+        // Create the middle pad container
+        const middlePad = document.createElement("div");
+        middlePad.classList.add(
+            "flex",            // Flex container
+            "flex-col",        // Arrange children in a column
+            "items-center",    // Center items horizontally
+            "w-1/2",           // Width is 1/3 of the parent container
+            "p-4",             // Padding inside the container
+            "bg-neutral-800",  // Dark background
+            "rounded-lg",      // Rounded corners
+            "shadow-lg",       // Large shadow effect
+        );
+        puzzleDiv.appendChild(middlePad);
+
+        // Create the answer container
+        const answerDiv = document.createElement("div");
+        answerDiv.classList.add(
+            "text-2xl",       // Large text size
+            "font-semibold",  // Semi-bold text
+            "text-center",    // Centered text
+            "text-green-500"  // Green text color
+        );
+        middlePad.appendChild(answerDiv);
+
+        // Create the answer text inside the answer container
+        const answerText = document.createElement("span");
+        answerText.textContent = "Answer: ";
+        answerDiv.appendChild(answerText);
+
+        // Create the answer number inside the answer container
+        this.answerNumber = document.createElement("span");
+        this.answerNumber.classList.add(
+            "transition-all",  // Smooth transition
+            "ease-in-out",     // Ease-in-out timing function
+            "duration-300",    // 300ms transition duration
+        );
+        this.answerNumber.textContent = "0";
+        answerDiv.appendChild(this.answerNumber);
+
+        // Create a div that will contain the reports columns
+        const mapDiv = document.createElement("div");
+        mapDiv.classList.add(
+            "flex",            // Flex container
+            "flex-row",        // Arrange children in a row
+            "justify-start",   // Align items at the start
+            "items-start",     // Align items at the start
+            "max-w-full",      // Full width
+        );
+        puzzleDiv.appendChild(mapDiv);
+
+        // Create the reports columns that will contain all the reports in the puzzle
+        this.mapColumn = document.createElement("ul");
+        this.mapColumn.classList.add(
+            "flex",            // Flex container
+            "flex-col",        // Arrange children in a column
+            "justify-center",  // Center items horizontally
+            "items-center",    // Center items vertically
+            "mt-4"             // Margin top
+        );
+        mapDiv.appendChild(this.mapColumn);
+
+        this.tiles = [];
     }
 }
 
