@@ -347,6 +347,24 @@
 
         src = ./day18;
       };
+      packages.aoc2024-day19 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day19";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.typescript
+          pkgs.nodejs
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.nodejs}/bin/node $out/bin/aoc2024-day19 --add-flags "$out/bin/main.js"
+        '';
+
+        src = ./day19;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -368,6 +386,7 @@
           self.packages.${system}.aoc2024-day16
           self.packages.${system}.aoc2024-day17
           self.packages.${system}.aoc2024-day18
+          self.packages.${system}.aoc2024-day19
         ];
         text =
           /*
@@ -454,6 +473,9 @@
 
             echo -e "$IYellow""--- Day 18: RAM Run (Ruby) ---""$Color_Off"
             aoc2024-day18 < ./input/day18.input
+
+            echo -e "$IRed""--- Day 19: Linen Layout (TypeScript) ---""$Color_Off"
+            aoc2024-day19 < ./input/day19.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
