@@ -15,7 +15,6 @@ rl.once("close", () => {
     main(input.join("\n"));
 });
 
-
 function parseInput(input: string): [string[], string[]] {
     const [towelsLine, puzzleBlock] = input.trim().split("\n\n");
 
