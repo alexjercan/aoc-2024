@@ -61,6 +61,7 @@
             pkgs.lua54Packages.lua
             pkgs.ruby
             pkgs.typescript
+            pkgs.go
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
@@ -365,6 +366,18 @@
 
         src = ./day19;
       };
+      packages.aoc2024-day20 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day20";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.go
+        ];
+
+        src = ./day20;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -387,6 +400,7 @@
           self.packages.${system}.aoc2024-day17
           self.packages.${system}.aoc2024-day18
           self.packages.${system}.aoc2024-day19
+          self.packages.${system}.aoc2024-day20
         ];
         text =
           /*
@@ -476,6 +490,9 @@
 
             echo -e "$IRed""--- Day 19: Linen Layout (TypeScript) ---""$Color_Off"
             aoc2024-day19 < ./input/day19.input
+
+            echo -e "$IGreen""--- Day 20: Race Condition (Go) ---""$Color_Off"
+            aoc2024-day20 < ./input/day20.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
