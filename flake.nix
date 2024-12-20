@@ -62,6 +62,8 @@
             pkgs.ruby
             pkgs.typescript
             pkgs.go
+            pkgs.yarn
+            pkgs.yarn2nix
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
@@ -348,19 +350,35 @@
 
         src = ./day18;
       };
-      packages.aoc2024-day19 = pkgs.stdenv.mkDerivation {
+      packages.aoc2024-day19 =
+      let
         pname = "aoc2024-day19";
         version = "1.0.0";
-
-        makeFlags = ["PREFIX=$(out)"];
+        nodePackages = pkgs.mkYarnModules {
+            inherit pname version;
+            packageJSON = ./day19/package.json;
+            yarnLock = ./day19/yarn.lock;
+            yarnNix = ./day19/yarn.nix;
+        };
+      in pkgs.stdenv.mkDerivation {
+        inherit pname version;
 
         nativeBuildInputs = [
           pkgs.typescript
           pkgs.nodejs
           pkgs.makeWrapper
+          pkgs.yarn
+          nodePackages
         ];
 
-        postInstall = ''
+        buildPhase = ''
+            ln -s ${nodePackages}/node_modules .
+            yarn build
+        '';
+
+        installPhase = ''
+          mkdir -p $out/bin
+          cp -r ./main.js $out/bin
           makeWrapper ${pkgs.nodejs}/bin/node $out/bin/aoc2024-day19 --add-flags "$out/bin/main.js"
         '';
 
@@ -370,7 +388,7 @@
         pname = "aoc2024-day20";
         version = "1.0.0";
 
-        makeFlags = ["PREFIX=$(out)"];
+        makeFlags = ["PREFIX=$(out)" "HOME=$(TMP)"];
 
         nativeBuildInputs = [
           pkgs.go

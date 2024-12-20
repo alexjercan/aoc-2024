@@ -7,7 +7,7 @@ CFLAGS=
 all: build
 
 build:
-	tsc main.ts
+	pnpm build
 
 .PHONY: clean install run
 
