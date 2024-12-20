@@ -64,6 +64,10 @@
             pkgs.go
             pkgs.yarn
             pkgs.yarn2nix
+            pkgs.groovy
+            pkgs.kotlin
+            pkgs.nim
+            pkgs.julia_19
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
@@ -396,6 +400,69 @@
 
         src = ./day20;
       };
+      packages.aoc2024-day21 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day21";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.groovy
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.groovy}/bin/groovy $out/bin/aoc2024-day21 --add-flags "$out/bin/main.groovy"
+        '';
+
+        src = ./day21;
+      };
+      packages.aoc2024-day22 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day22";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.kotlin
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.jdk}/bin/java $out/bin/aoc2024-day22 --add-flags "-jar $out/bin/main.jar"
+        '';
+
+        src = ./day22;
+      };
+      packages.aoc2024-day23 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day23";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)" "HOME=$(TMP)"];
+
+        nativeBuildInputs = [
+          pkgs.nim
+        ];
+
+        src = ./day23;
+      };
+      packages.aoc2024-day24 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day24";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.julia_19
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.julia_19}/bin/julia $out/bin/aoc2024-day24 --add-flags "$out/bin/main.jl"
+        '';
+
+        src = ./day24;
+      };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
         runtimeInputs = [
@@ -419,6 +486,10 @@
           self.packages.${system}.aoc2024-day18
           self.packages.${system}.aoc2024-day19
           self.packages.${system}.aoc2024-day20
+          self.packages.${system}.aoc2024-day21
+          self.packages.${system}.aoc2024-day22
+          self.packages.${system}.aoc2024-day23
+          self.packages.${system}.aoc2024-day24
         ];
         text =
           /*
@@ -511,6 +582,18 @@
 
             echo -e "$IGreen""--- Day 20: Race Condition (Go) ---""$Color_Off"
             aoc2024-day20 < ./input/day20.input
+
+            echo -e "$IYellow""--- Day 21: Groovy Grid (Groovy) ---""$Color_Off"
+            aoc2024-day21 < ./input/day21.input
+
+            echo -e "$IRed""--- Day 22: Java Jumble (Kotlin) ---""$Color_Off"
+            aoc2024-day22 < ./input/day22.input
+
+            echo -e "$IGreen""--- Day 23: Nimble Numbers (Nim) ---""$Color_Off"
+            aoc2024-day23 < ./input/day23.input
+
+            echo -e "$IYellow""--- Day 24: Julia Jigsaw (Julia) ---""$Color_Off"
+            aoc2024-day24 < ./input/day24.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
