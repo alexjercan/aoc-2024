@@ -68,6 +68,7 @@
             pkgs.kotlin
             pkgs.nim
             pkgs.julia_19
+            pkgs.sbcl
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
@@ -95,7 +96,7 @@
           pkgs.fasm
         ];
 
-        src = ./day01;
+        src = ./day01-stack;
       };
       packages.aoc2024-day02 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day02";
@@ -107,7 +108,7 @@
           pkgs.ghc
         ];
 
-        src = ./day02;
+        src = ./day02-haskell;
       };
       packages.aoc2024-day03 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day03";
@@ -124,7 +125,7 @@
           makeWrapper ${pkgs.jre}/bin/java $out/bin/aoc2024-day03 --add-flags "-cp $out/bin/aoc2024-day03.jar Main"
         '';
 
-        src = ./day03;
+        src = ./day03-java;
       };
       packages.aoc2024-day04 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day04";
@@ -136,7 +137,7 @@
           pkgs.odin
         ];
 
-        src = ./day04;
+        src = ./day04-odin;
       };
       packages.aoc2024-day05 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day05";
@@ -153,7 +154,7 @@
           makeWrapper ${pkgs.swi-prolog}/bin/swipl $out/bin/aoc2024-day05 --add-flags "-g main -t halt $out/bin/main.pl"
         '';
 
-        src = ./day05;
+        src = ./day05-prolog;
       };
       packages.aoc2024-day06 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day06";
@@ -170,7 +171,7 @@
           makeWrapper ${pkgs.nodejs}/bin/node $out/bin/aoc2024-day06 --add-flags "$out/bin/main.js"
         '';
 
-        src = ./day06;
+        src = ./day06-javascript;
       };
       packages.aoc2024-day07 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day07";
@@ -182,7 +183,7 @@
           pkgs.vlang
         ];
 
-        src = ./day07;
+        src = ./day07-vlang;
       };
       packages.aoc2024-day08 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day08";
@@ -194,7 +195,7 @@
           pkgs.ocaml
         ];
 
-        src = ./day08;
+        src = ./day08-ocaml;
       };
       packages.aoc2024-day09 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day09";
@@ -206,7 +207,7 @@
             pkgs.rustc
         ];
 
-        src = ./day09;
+        src = ./day09-rust;
       };
       packages.aoc2024-day10 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day10";
@@ -218,7 +219,7 @@
             pkgs.zig
         ];
 
-        src = ./day10;
+        src = ./day10-zig;
       };
       packages.aoc2024-day11 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day11";
@@ -230,7 +231,7 @@
             pkgs.c3c
         ];
 
-        src = ./day11;
+        src = ./day11-c3;
       };
       packages.aoc2024-day12 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day12";
@@ -248,7 +249,7 @@
           makeWrapper ${pygyat}/bin/pygyat $out/bin/aoc2024-day12 --add-flags "$out/bin/main.gyat"
         '';
 
-        src = ./day12;
+        src = ./day12-pygyat;
       };
       packages.aoc2024-day13 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day13";
@@ -260,7 +261,7 @@
           pkgs.gcc
         ];
 
-        src = ./day13;
+        src = ./day13-cpp;
       };
       packages.aoc2024-day14 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day14";
@@ -277,7 +278,7 @@
           makeWrapper ${pkgs.elixir}/bin/elixir $out/bin/aoc2024-day14 --add-flags "$out/bin/main.exs"
         '';
 
-        src = ./day14;
+        src = ./day14-elixir;
       };
       packages.aoc2024-day15 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day15";
@@ -289,7 +290,7 @@
           pkgs.clang
         ];
 
-        src = ./day15;
+        src = ./day15-c;
       };
       packages.aoc2024-day15-game = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day15-game";
@@ -301,7 +302,7 @@
           pkgs.clang
         ];
 
-        src = ./day15;
+        src = ./day15-c;
       };
       packages.aoc2024-day16 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day16";
@@ -318,7 +319,7 @@
           makeWrapper ${pkgs.python3}/bin/python3 $out/bin/aoc2024-day16 --add-flags "$out/bin/main.py"
         '';
 
-        src = ./day16;
+        src = ./day16-python;
       };
       packages.aoc2024-day17 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day17";
@@ -335,7 +336,7 @@
           makeWrapper ${pkgs.lua54Packages.lua}/bin/lua $out/bin/aoc2024-day17 --add-flags "$out/bin/main.lua"
         '';
 
-        src = ./day17;
+        src = ./day17-lua;
       };
       packages.aoc2024-day18 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day18";
@@ -352,7 +353,7 @@
           makeWrapper ${pkgs.ruby}/bin/ruby $out/bin/aoc2024-day18 --add-flags "$out/bin/main.rb"
         '';
 
-        src = ./day18;
+        src = ./day18-ruby;
       };
       packages.aoc2024-day19 =
       let
@@ -360,9 +361,9 @@
         version = "1.0.0";
         nodePackages = pkgs.mkYarnModules {
             inherit pname version;
-            packageJSON = ./day19/package.json;
-            yarnLock = ./day19/yarn.lock;
-            yarnNix = ./day19/yarn.nix;
+            packageJSON = ./day19-typescript/package.json;
+            yarnLock = ./day19-typescript/yarn.lock;
+            yarnNix = ./day19-typescript/yarn.nix;
         };
       in pkgs.stdenv.mkDerivation {
         inherit pname version;
@@ -386,7 +387,7 @@
           makeWrapper ${pkgs.nodejs}/bin/node $out/bin/aoc2024-day19 --add-flags "$out/bin/main.js"
         '';
 
-        src = ./day19;
+        src = ./day19-typescript;
       };
       packages.aoc2024-day20 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day20";
@@ -398,7 +399,7 @@
           pkgs.go
         ];
 
-        src = ./day20;
+        src = ./day20-go;
       };
       packages.aoc2024-day21 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day21";
@@ -415,7 +416,7 @@
           makeWrapper ${pkgs.groovy}/bin/groovy $out/bin/aoc2024-day21 --add-flags "$out/bin/main.groovy"
         '';
 
-        src = ./day21;
+        src = ./day21-groovy;
       };
       packages.aoc2024-day22 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day22";
@@ -432,7 +433,7 @@
           makeWrapper ${pkgs.jdk}/bin/java $out/bin/aoc2024-day22 --add-flags "-jar $out/bin/main.jar"
         '';
 
-        src = ./day22;
+        src = ./day22-kotlin;
       };
       packages.aoc2024-day23 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day23";
@@ -444,7 +445,7 @@
           pkgs.nim
         ];
 
-        src = ./day23;
+        src = ./day23-nim;
       };
       packages.aoc2024-day24 = pkgs.stdenv.mkDerivation {
         pname = "aoc2024-day24";
@@ -461,7 +462,24 @@
           makeWrapper ${pkgs.julia_19}/bin/julia $out/bin/aoc2024-day24 --add-flags "$out/bin/main.jl"
         '';
 
-        src = ./day24;
+        src = ./day24-julia;
+      };
+      packages.aoc2024-day25 = pkgs.stdenv.mkDerivation {
+        pname = "aoc2024-day25";
+        version = "1.0.0";
+
+        makeFlags = ["PREFIX=$(out)"];
+
+        nativeBuildInputs = [
+          pkgs.sbcl
+          pkgs.makeWrapper
+        ];
+
+        postInstall = ''
+          makeWrapper ${pkgs.sbcl}/bin/sbcl $out/bin/aoc2024-day25 --add-flags "--script $out/bin/main.lisp"
+        '';
+
+        src = ./day25-common-lisp;
       };
       packages.aoc2024 = pkgs.writeShellApplication {
         name = "aoc2024";
@@ -490,6 +508,7 @@
           self.packages.${system}.aoc2024-day22
           self.packages.${system}.aoc2024-day23
           self.packages.${system}.aoc2024-day24
+          self.packages.${system}.aoc2024-day25
         ];
         text =
           /*
@@ -594,6 +613,9 @@
 
             echo -e "$IYellow""--- Day 24: Julia Jigsaw (Julia) ---""$Color_Off"
             aoc2024-day24 < ./input/day24.input
+
+            echo -e "$IRed""--- Day 25: Lisp Lights (Common Lisp) ---""$Color_Off"
+            aoc2024-day25 < ./input/day25.input
           '';
       };
       packages.aoc2024-get = pkgs.writeShellApplication {
