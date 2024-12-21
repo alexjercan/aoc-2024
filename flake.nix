@@ -602,7 +602,7 @@
             echo -e "$IGreen""--- Day 20: Race Condition (Go) ---""$Color_Off"
             aoc2024-day20 < ./input/day20.input
 
-            echo -e "$IYellow""--- Day 21: Groovy Grid (Groovy) ---""$Color_Off"
+            echo -e "$IYellow""--- Day 21: Keypad Conundrum (Groovy) ---""$Color_Off"
             aoc2024-day21 < ./input/day21.input
 
             echo -e "$IRed""--- Day 22: Java Jumble (Kotlin) ---""$Color_Off"
