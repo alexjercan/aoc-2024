@@ -15,7 +15,7 @@ install:
 	mkdir -p $(BINDIR)
 	cp main.jar $(BINDIR)/main.jar
 
-run:
+run: build
 	java -jar main.jar
 
 clean:
