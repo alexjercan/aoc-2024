@@ -605,10 +605,10 @@
             echo -e "$IYellow""--- Day 21: Keypad Conundrum (Groovy) ---""$Color_Off"
             aoc2024-day21 < ./input/day21.input
 
-            echo -e "$IRed""--- Day 22: Java Jumble (Kotlin) ---""$Color_Off"
+            echo -e "$IRed""--- Day 22: Monkey Market (Kotlin) ---""$Color_Off"
             aoc2024-day22 < ./input/day22.input
 
-            echo -e "$IGreen""--- Day 23: Nimble Numbers (Nim) ---""$Color_Off"
+            echo -e "$IGreen""--- Day 23: LAN Party (Nim) ---""$Color_Off"
             aoc2024-day23 < ./input/day23.input
 
             echo -e "$IYellow""--- Day 24: Julia Jigsaw (Julia) ---""$Color_Off"
