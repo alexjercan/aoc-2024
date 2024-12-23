@@ -6,7 +6,10 @@ all: build
 build:
 	nim c main.nim
 
-.PHONY: clean install
+.PHONY: clean install run
+
+run: build
+	./main
 
 install:
 	mkdir -p $(BINDIR)
