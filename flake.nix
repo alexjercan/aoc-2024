@@ -611,7 +611,7 @@
             echo -e "$IGreen""--- Day 23: LAN Party (Nim) ---""$Color_Off"
             aoc2024-day23 < ./input/day23.input
 
-            echo -e "$IYellow""--- Day 24: (Julia) ---""$Color_Off"
+            echo -e "$IYellow""--- Day 24: Crossed Wires (Julia) ---""$Color_Off"
             aoc2024-day24 < ./input/day24.input
 
             echo -e "$IRed""--- Day 25: (Common Lisp) ---""$Color_Off"
