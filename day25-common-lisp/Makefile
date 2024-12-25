@@ -15,7 +15,7 @@ install:
 	cp main.lisp $(BINDIR)/main.lisp
 
 run: build
-	sbcl main.lisp
+	sbcl --script main.lisp
 
 clean:
 
